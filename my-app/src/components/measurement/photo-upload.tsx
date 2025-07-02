@@ -1,8 +1,7 @@
 'use client'
-
 import { useState } from 'react'
-import { Upload, Camera, Loader2 } from 'lucide-react'
-import { Button } from '@/components/ui/button'
+import { Upload, Loader2 } from 'lucide-react'
+import { cn } from '@/lib/utils'
 
 interface PhotoUploadProps {
   onMeasurementsExtracted: (measurements: any) => void
@@ -86,9 +85,4 @@ export function PhotoUpload({ onMeasurementsExtracted, productType }: PhotoUploa
       )}
     </div>
   )
-}
-
-// Helper function (should be in lib/utils.ts)
-function cn(...inputs: any[]) {
-  return inputs.filter(Boolean).join(' ')
 }

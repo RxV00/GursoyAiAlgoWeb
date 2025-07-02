@@ -5,9 +5,9 @@ import { Ruler, Camera } from 'lucide-react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { MeasurementForm } from '@/components/forms/measurement-form'
-import { PhotoUpload } from '@/components/measurement/photo-upload'
-import { ProductSelector } from '@/components/product/product-selector'
-import { PriceDisplay } from '@/components/pricing/price-display'
+import {PhotoUpload} from '@/components/measurement/photo-upload'
+import { ProductSelector } from '@/components/product/product-selecter'
+import {PriceDisplay} from '@/components/pricing/price-display'
 
 export function MeasurementSection() {
   const [selectedProduct, setSelectedProduct] = useState<string | null>(null)
