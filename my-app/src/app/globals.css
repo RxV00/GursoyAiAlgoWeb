@@ -1,70 +1,76 @@
 @import "tailwindcss";
 
-  @layer base {
-    :root {
-      --background: 0 0% 98%; /* Light gray-white background */
-      --foreground: 0 0% 15%; /* Dark text for readability */
-      --primary: 45 95% 33%; /* #f5dd42 - main yellow */
-      --primary-foreground: 0 0% 100%; /* White text on yellow */
-      --secondary: 0 0% 94%; /* Light gray for secondary elements */
-      --secondary-foreground: 0 0% 15%; /* Dark text on light gray */
-      --accent: 45 95% 33%; /* Same yellow for accents */
-      --accent-foreground: 0 0% 100%; /* White text on yellow */
-      --muted: 0 0% 96%; /* Very light gray background */
-      --muted-foreground: 0 0% 40%; /* Medium gray for muted text */
-      --destructive: 0 84.2% 60.2%; /* Keep red for errors */
-      --destructive-foreground: 0 0% 100%; /* White text on red */
-      --border: 0 0% 88%; /* Light gray borders */
-      --input: 0 0% 100%; /* White input backgrounds */
-      --ring: 45 95% 33%; /* Yellow focus rings */
-      --radius: 0.5rem;
-    }
+@layer base {
+  :root {
+    --background: 0 0% 100%; /* Pure white background */
+    --foreground: 215 28% 17%; /* Dark blue-gray text */
+    --primary: 215 84% 16%; /* Deep navy blue */
+    --primary-foreground: 0 0% 100%; /* White text on blue */
+    --secondary: 215 16% 47%; /* Medium blue-gray */
+    --secondary-foreground: 0 0% 100%; /* White text on secondary */
+    --accent: 215 84% 16%; /* Same deep navy for accents */
+    --accent-foreground: 0 0% 100%; /* White text on accent */
+    --muted: 215 16% 97%; /* Very light blue-gray */
+    --muted-foreground: 215 13% 35%; /* Muted blue-gray text */
+    --destructive: 0 84.2% 60.2%; /* Red for errors */
+    --destructive-foreground: 0 0% 100%; /* White text on red */
+    --border: 215 20% 93%; /* Light blue-gray borders */
+    --input: 0 0% 100%; /* White input backgrounds */
+    --ring: 215 84% 16%; /* Deep navy focus rings */
+    --radius: 0.5rem;
   }
+}
 
-  @layer base {
-    * {
-      border-color: hsl(var(--border));
-    }
-    body {
-      background-color: hsl(var(--background));
-      color: hsl(var(--foreground));
-    }
+@layer base {
+  * {
+    border-color: hsl(var(--border));
   }
+  body {
+    background-color: hsl(var(--background));
+    color: hsl(var(--foreground));
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  }
+}
 
-  /* Custom animations */
-  @keyframes fade-up {
-    from {
-      opacity: 0;
-      transform: translateY(20px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
+/* Custom animations */
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
   }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
 
-  @keyframes float {
-    0%, 100% {
-      transform: translateY(0);
-    }
-    50% {
-      transform: translateY(-10px);
-    }
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0);
   }
+  50% {
+    transform: translateY(-10px);
+  }
+}
 
-  .animate-fade-up {
-    animation: fade-up 0.6s ease-out;
-  }
+.animate-fade-up {
+  animation: fade-up 0.6s ease-out;
+}
 
-  .animate-float {
-    animation: float 3s ease-in-out infinite;
-  }
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
 
-  /* Custom gradient backgrounds */
-  .bg-gradient-warm {
-    background: linear-gradient(135deg, #f5dd42 0%, #f7e55c 100%);
-  }
+/* Elegant gradient backgrounds */
+.bg-gradient-elegant {
+  background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+}
 
-  .bg-gradient-cool {
-    background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
-  }
+.bg-gradient-subtle {
+  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+}
+
+/* Custom shadows for depth */
+.shadow-elegant {
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}

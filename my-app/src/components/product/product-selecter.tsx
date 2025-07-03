@@ -4,10 +4,26 @@ import { Check } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 const products = [
-  { id: 'sliding-window', name: 'Sliding Window', icon: '🪟' },
-  { id: 'french-door', name: 'French Door', icon: '🚪' },
-  { id: 'skylight', name: 'Skylight', icon: '☀️' },
-  { id: 'aluminum-frame', name: 'Aluminum Frame', icon: '🏗️' },
+  {
+    id: 'sliding-window',
+    name: 'Sliding Window',
+    image: 'https://via.placeholder.com/40?text=Window'
+  },
+  {
+    id: 'french-door',
+    name: 'French Door',
+    image: 'https://via.placeholder.com/40?text=Door'
+  },
+  {
+    id: 'skylight',
+    name: 'Skylight',
+    image: 'https://via.placeholder.com/40?text=Light'
+  },
+  {
+    id: 'aluminum-frame',
+    name: 'Aluminum Frame',
+    image: 'https://via.placeholder.com/40?text=Frame'
+  }
 ]
 
 interface ProductSelectorProps {
@@ -30,7 +46,11 @@ export function ProductSelector({ onProductSelect, selectedProduct }: ProductSel
           )}
         >
           <div className="flex items-center space-x-3">
-            <span className="text-2xl">{product.icon}</span>
+          <img
+              src={product.image}
+              alt={product.name}
+              className="h-6 w-6 rounded-md object-cover"
+            />
             <span className="font-medium">{product.name}</span>
           </div>
           {selectedProduct === product.id && (

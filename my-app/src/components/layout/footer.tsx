@@ -3,21 +3,33 @@ import Link from 'next/link'
 
 export function Footer() {
   return (
-    <footer className="bg-slate-50 py-12 mt-auto border-t border-slate-200">
+    <footer className="bg-slate-50 border-t border-slate-200 py-16 mt-auto">
       <div className="mx-auto max-w-7xl px-6">
-        <div className="flex flex-col md:flex-row items-center justify-between text-sm text-slate-600 space-y-4
-md:space-y-0">
-          <div className="flex items-center space-x-2">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-warm">
-              <span className="text-sm font-bold text-slate-900">AQ</span>
+        <div className="flex flex-col md:flex-row items-center justify-between space-y-6 md:space-y-0">
+          <div className="flex items-center space-x-3">
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-900">
+              <span className="text-sm font-semibold text-white">AQ</span>
             </div>
-            <p className="font-medium">&copy; {new Date().getFullYear()} ArchQuote. All rights reserved.</p>
+            <div className="text-slate-600">
+              <p className="font-medium">
+                &copy; {new Date().getFullYear()} ArchQuote. All rights reserved.
+              </p>
+            </div>
           </div>
-          <div className="flex space-x-6">
-            <Link href="#products" className="hover:text-slate-900 transition-colors">Products</Link>
-            <Link href="#features" className="hover:text-slate-900 transition-colors">Features</Link>
-            <Link href="#measurement" className="hover:text-slate-900 transition-colors">How It Works</Link>
-            <Link href="#contact" className="hover:text-slate-900 transition-colors">Contact</Link>
+          <div className="flex space-x-8">
+            <Link href="#products" className="text-slate-600 hover:text-blue-900 transition-colors duration-200">
+              Products
+            </Link>
+            <Link href="#features" className="text-slate-600 hover:text-blue-900 transition-colors duration-200">
+              Features
+            </Link>
+            <Link href="#measurement" className="text-slate-600 hover:text-blue-900 transition-colors
+duration-200">
+              How It Works
+            </Link>
+            <Link href="#contact" className="text-slate-600 hover:text-blue-900 transition-colors duration-200">
+              Contact
+            </Link>
           </div>
         </div>
       </div>
