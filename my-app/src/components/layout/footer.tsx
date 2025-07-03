@@ -8,11 +8,11 @@ export function Footer() {
         <div className="flex flex-col md:flex-row items-center justify-between space-y-6 md:space-y-0">
           <div className="flex items-center space-x-3">
             <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-900">
-              <span className="text-sm font-semibold text-white">AQ</span>
+              <span className="text-sm font-semibold text-white">GR</span>
             </div>
             <div className="text-slate-600">
               <p className="font-medium">
-                &copy; {new Date().getFullYear()} ArchQuote. All rights reserved.
+                &copy; {new Date().getFullYear()} Gursoylar. All rights reserved.
               </p>
             </div>
           </div>

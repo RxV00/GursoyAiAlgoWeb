@@ -11,7 +11,7 @@ export function CTASection() {
             Ready to Get <span className="font-semibold">Started</span>?
           </h2>
           <p className="text-xl text-blue-100 max-w-3xl mx-auto leading-relaxed">
-            Join thousands of architects and contractors who trust ArchQuote for their professional project
+            Join thousands of architects and contractors who trust Gursoylar for their professional project
 estimates
           </p>
           <div className="flex flex-col sm:flex-row gap-6 justify-center pt-8">

@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button'
 
 interface PriceDisplayProps {
   product: string | null
-  measurements: { width: number; height: number; unit: string } | null
+  measurements: Record<string, number | string> | null
   price: number | null
 }
 
@@ -16,18 +16,22 @@ export function PriceDisplay({ product, measurements, price }: PriceDisplayProps
       </p>
     )
   }
-
+  const unit = measurements.unit || 'cm'
   return (
     <div className="space-y-4 text-center">
       <div className="text-4xl font-bold text-gray-900">
         {price !== null ? `₺${price.toFixed(2)}` : 'Calculating...'}
       </div>
-      <p className="text-sm text-gray-500">
-        {measurements.width} x {measurements.height} {measurements.unit}
-      </p>
-      <Button className="w-full bg-accent hover:bg-accent/90 text-white">
-        Continue
-      </Button>
+      <ul className="text-sm text-gray-500 space-y-1">
+        {Object.entries(measurements)
+          .filter(([k]) => k !== 'unit')
+          .map(([key, value]) => (
+            <li key={key}>
+              {key}: {value} {unit}
+            </li>
+          ))}
+      </ul>
+      <Button className="w-full bg-accent hover:bg-accent/90 text-white">Continue</Button>
     </div>
   )
 }

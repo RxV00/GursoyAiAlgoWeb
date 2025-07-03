@@ -25,7 +25,7 @@ export function FeaturesSection() {
       <div className="mx-auto max-w-7xl px-6">
         <div className="text-center mb-20">
           <h2 className="text-5xl font-light text-slate-900 mb-6">
-            Why Choose <span className="font-semibold text-blue-900">ArchQuote</span>?
+            Why Choose <span className="font-semibold text-blue-900">Gursoylar</span>?
           </h2>
           <p className="text-xl text-slate-600 max-w-3xl mx-auto leading-relaxed">
             Experience the future of architectural product quoting with our advanced features designed for
