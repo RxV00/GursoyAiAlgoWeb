@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
+import { getProductById } from '@/lib/product-data'
 
 interface MeasurementFormProps {
   onMeasurementsChange: (measurements: any) => void
@@ -24,7 +25,8 @@ export function MeasurementForm({ onMeasurementsChange, productType }: Measureme
       })
     }
   }
-
+  const product = productType ? getProductById(productType) : null
+  const disabled = !productType
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       <div>
@@ -36,7 +38,7 @@ export function MeasurementForm({ onMeasurementsChange, productType }: Measureme
           value={width}
           onChange={(e) => setWidth(e.target.value)}
           className="mt-1"
-          disabled={!productType}
+          disabled={disabled}
         />
       </div>
       <div>
@@ -48,13 +50,13 @@ export function MeasurementForm({ onMeasurementsChange, productType }: Measureme
           value={height}
           onChange={(e) => setHeight(e.target.value)}
           className="mt-1"
-          disabled={!productType}
+          disabled={disabled}
         />
       </div>
       <Button 
         type="submit" 
         className="w-full"
-        disabled={!productType || !width || !height}
+        disabled={!disabled || !width || !height}
       >
         Calculate Price
       </Button>

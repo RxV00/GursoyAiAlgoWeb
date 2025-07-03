@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Ruler, Camera } from 'lucide-react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
@@ -8,11 +8,20 @@ import { MeasurementForm } from '@/components/forms/measurement-form'
 import { PhotoUpload } from '@/components/measurement/photo-upload'
 import { ProductSelector } from '@/components/product/product-selecter'
 import { PriceDisplay } from '@/components/pricing/price-display'
+import { calculatePrice } from '@/lib/pricing'
 
 export function MeasurementSection() {
   const [selectedProduct, setSelectedProduct] = useState<string | null>(null)
   const [measurements, setMeasurements] = useState<any>(null)
-  const [price] = useState<number | null>(null)
+  const [price, setPrice] = useState<number | null>(null)
+
+  useEffect(() => {
+    if (selectedProduct && measurements) {
+      setPrice(calculatePrice(selectedProduct, measurements))
+    } else {
+      setPrice(null)
+    }
+  }, [selectedProduct, measurements])
 
   return (
     <section id="measurement" className="py-24 bg-slate-50">

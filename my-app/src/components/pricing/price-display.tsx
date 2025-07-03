@@ -20,7 +20,7 @@ export function PriceDisplay({ product, measurements, price }: PriceDisplayProps
   return (
     <div className="space-y-4 text-center">
       <div className="text-4xl font-bold text-gray-900">
-        {price !== null ? `$${price.toFixed(2)}` : 'Calculating...'}
+        {price !== null ? `₺${price.toFixed(2)}` : 'Calculating...'}
       </div>
       <p className="text-sm text-gray-500">
         {measurements.width} x {measurements.height} {measurements.unit}
