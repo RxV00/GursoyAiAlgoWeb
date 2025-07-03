@@ -1,61 +1,70 @@
 @import "tailwindcss";
 
-@layer base {
-  :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
-    --primary: 211 39% 23%; /* Navy blue #1B365D */
-    --primary-foreground: 210 40% 98%;
-    --secondary: 217 19% 27%; /* Charcoal gray #374151 */
-    --secondary-foreground: 210 40% 98%;
-    --accent: 25 95% 53%; /* Orange #EA580C */
-    --accent-foreground: 0 0% 100%;
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 211 39% 23%;
-    --radius: 0.5rem;
+  @layer base {
+    :root {
+      --background: 0 0% 98%; /* Light gray-white background */
+      --foreground: 0 0% 15%; /* Dark text for readability */
+      --primary: 45 95% 33%; /* #f5dd42 - main yellow */
+      --primary-foreground: 0 0% 100%; /* White text on yellow */
+      --secondary: 0 0% 94%; /* Light gray for secondary elements */
+      --secondary-foreground: 0 0% 15%; /* Dark text on light gray */
+      --accent: 45 95% 33%; /* Same yellow for accents */
+      --accent-foreground: 0 0% 100%; /* White text on yellow */
+      --muted: 0 0% 96%; /* Very light gray background */
+      --muted-foreground: 0 0% 40%; /* Medium gray for muted text */
+      --destructive: 0 84.2% 60.2%; /* Keep red for errors */
+      --destructive-foreground: 0 0% 100%; /* White text on red */
+      --border: 0 0% 88%; /* Light gray borders */
+      --input: 0 0% 100%; /* White input backgrounds */
+      --ring: 45 95% 33%; /* Yellow focus rings */
+      --radius: 0.5rem;
+    }
   }
-}
 
-@layer base {
-  * {
-    border-color: hsl(var(--border));
+  @layer base {
+    * {
+      border-color: hsl(var(--border));
+    }
+    body {
+      background-color: hsl(var(--background));
+      color: hsl(var(--foreground));
+    }
   }
-  body {
-    background-color: hsl(var(--background));
-    color: hsl(var(--foreground));
-  }
-}
 
-/* Custom animations */
-@keyframes fade-up {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
+  /* Custom animations */
+  @keyframes fade-up {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
   }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
 
-@keyframes float {
-  0%, 100% {
-    transform: translateY(0);
+  @keyframes float {
+    0%, 100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-10px);
+    }
   }
-  50% {
-    transform: translateY(-10px);
+
+  .animate-fade-up {
+    animation: fade-up 0.6s ease-out;
   }
-}
 
-.animate-fade-up {
-  animation: fade-up 0.6s ease-out;
-}
+  .animate-float {
+    animation: float 3s ease-in-out infinite;
+  }
 
-.animate-float {
-  animation: float 3s ease-in-out infinite;
-}
+  /* Custom gradient backgrounds */
+  .bg-gradient-warm {
+    background: linear-gradient(135deg, #f5dd42 0%, #f7e55c 100%);
+  }
+
+  .bg-gradient-cool {
+    background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+  }
