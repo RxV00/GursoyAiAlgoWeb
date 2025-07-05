@@ -34,11 +34,11 @@ export function Header() {
       <nav className="mx-auto max-w-7xl px-6">
         <div className="flex h-20 items-center justify-between">
           <Link href="/" className="flex items-center space-x-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-blue-900 shadow-lg">
+            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-[#c6d3e1] shadow-lg">
               <span className="text-xl font-semibold text-white">PS</span>
             </div>
-            <span className="text-2xl font-light text-slate-900">
-              Gursoy<span className="font-semibold text-blue-900">lar</span>
+            <span className="text-2xl font-medium italic text-slate-900">
+              Gursoy<span className="font-semibold text-[#7a8fa5]">lar</span>
             </span>
           </Link>
 
@@ -47,18 +47,18 @@ export function Header() {
               <a
                 key={item.name}
                 href={item.href}
-                className="font-medium text-slate-600 hover:text-blue-900 transition-colors duration-200"
+                className="font-medium text-slate-600 hover:text-[#7a8fa5] transition-colors duration-200"
               >
                 {item.name}
               </a>
             ))}
             <Link href="/login">
-              <Button variant="ghost" className="text-slate-600 hover:text-blue-900 hover:bg-blue-50">
+              <Button variant="ghost" className="text-slate-600 hover:text-[#7a8fa5] hover:bg-[#f0f4f8]">
                 Sign In
               </Button>
             </Link>
             <Link href="/register">
-              <Button className="bg-blue-900 hover:bg-blue-800 text-white shadow-lg">
+              <Button className="bg-[#c6d3e1] hover:bg-[#a8bcd2] text-[#2d3e50] shadow-lg">
                 Get Started
               </Button>
             </Link>
@@ -89,8 +89,8 @@ export function Header() {
             <a
               key={item.name}
               href={item.href}
-              className="block rounded-lg px-3 py-3 text-base font-medium text-slate-600 hover:bg-blue-50
-hover:text-blue-900 transition-colors"
+              className="block rounded-lg px-3 py-3 text-base font-medium text-slate-600 hover:bg-[#f0f4f8]
+hover:text-[#7a8fa5] transition-colors"
               onClick={() => setIsMobileMenuOpen(false)}
             >
               {item.name}
@@ -98,16 +98,16 @@ hover:text-blue-900 transition-colors"
           ))}
           <Link
             href="/login"
-            className="block rounded-lg px-3 py-3 text-base font-medium text-slate-600 hover:bg-blue-50
-hover:text-blue-900 transition-colors"
+            className="block rounded-lg px-3 py-3 text-base font-medium text-slate-600 hover:bg-[#f0f4f8]
+hover:text-[#7a8fa5] transition-colors"
             onClick={() => setIsMobileMenuOpen(false)}
           >
             Sign In
           </Link>
           <Link
             href="/register"
-            className="block rounded-lg px-3 py-3 text-base font-medium text-slate-600 hover:bg-blue-50
-hover:text-blue-900 transition-colors"
+            className="block rounded-lg px-3 py-3 text-base font-medium text-slate-600 hover:bg-[#f0f4f8]
+hover:text-[#7a8fa5] transition-colors"
             onClick={() => setIsMobileMenuOpen(false)}
           >
             Get Started

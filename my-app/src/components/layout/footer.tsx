@@ -7,7 +7,7 @@ export function Footer() {
       <div className="mx-auto max-w-7xl px-6">
         <div className="flex flex-col md:flex-row items-center justify-between space-y-6 md:space-y-0">
           <div className="flex items-center space-x-3">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-900">
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#c6d3e1]">
               <span className="text-sm font-semibold text-white">GR</span>
             </div>
             <div className="text-slate-600">
@@ -17,17 +17,17 @@ export function Footer() {
             </div>
           </div>
           <div className="flex space-x-8">
-            <Link href="#products" className="text-slate-600 hover:text-blue-900 transition-colors duration-200">
+            <Link href="#products" className="text-slate-600 hover:text-[#7a8fa5] transition-colors duration-200">
               Products
             </Link>
-            <Link href="#features" className="text-slate-600 hover:text-blue-900 transition-colors duration-200">
+            <Link href="#features" className="text-slate-600 hover:text-[#7a8fa5] transition-colors duration-200">
               Features
             </Link>
-            <Link href="#measurement" className="text-slate-600 hover:text-blue-900 transition-colors
+            <Link href="#measurement" className="text-slate-600 hover:text-[#7a8fa5] transition-colors
 duration-200">
-              How It Works
+              Measurement
             </Link>
-            <Link href="#contact" className="text-slate-600 hover:text-blue-900 transition-colors duration-200">
+            <Link href="#contact" className="text-slate-600 hover:text-[#7a8fa5] transition-colors duration-200">
               Contact
             </Link>
           </div>

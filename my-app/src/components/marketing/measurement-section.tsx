@@ -28,7 +28,7 @@ export function MeasurementSection() {
       <div className="mx-auto max-w-7xl px-6">
         <div className="text-center mb-20">
           <h2 className="text-5xl font-light text-slate-900 mb-6">
-            Get Your <span className="font-semibold text-blue-900">Instant Quote</span>
+            Get Your <span className="font-semibold text-[#7a8fa5]">Instant Quote</span>
           </h2>
           <p className="text-xl text-slate-600 max-w-3xl mx-auto leading-relaxed">
             Select a product and provide measurements to receive an accurate, professional price estimate
@@ -39,9 +39,9 @@ export function MeasurementSection() {
           {/* Step 1: Product Selection */}
           <Card className="lg:col-span-1 border-slate-200 bg-white shadow-lg hover:shadow-elegant transition-all
 duration-300">
-            <CardHeader className="bg-blue-900 text-white rounded-t-lg">
+            <CardHeader className="bg-[#c6d3e1] text-[#2d3e50] rounded-t-lg">
               <CardTitle className="text-xl">1. Select Product</CardTitle>
-              <CardDescription className="text-blue-100">
+              <CardDescription className="text-[#4a5f7a]">
                 Choose the architectural product you need
               </CardDescription>
             </CardHeader>
@@ -56,22 +56,22 @@ duration-300">
           {/* Step 2: Measurements */}
           <Card className="lg:col-span-1 border-slate-200 bg-white shadow-lg hover:shadow-elegant transition-all
 duration-300">
-            <CardHeader className="bg-blue-900 text-white rounded-t-lg">
+            <CardHeader className="bg-[#c6d3e1] text-[#2d3e50] rounded-t-lg">
               <CardTitle className="text-xl">2. Provide Measurements</CardTitle>
-              <CardDescription className="text-blue-100">
+              <CardDescription className="text-[#4a5f7a]">
                 Upload a photo or enter dimensions manually
               </CardDescription>
             </CardHeader>
             <CardContent className="p-8">
               <Tabs defaultValue="manual" className="w-full">
                 <TabsList className="grid w-full grid-cols-2 bg-slate-100">
-                  <TabsTrigger value="manual" className="data-[state=active]:bg-blue-900
-data-[state=active]:text-white">
+                  <TabsTrigger value="manual" className="data-[state=active]:bg-[#c6d3e1]
+data-[state=active]:text-[#2d3e50]">
                     <Ruler className="mr-2 h-4 w-4" />
                     Manual
                   </TabsTrigger>
-                  <TabsTrigger value="photo" className="data-[state=active]:bg-blue-900
-data-[state=active]:text-white">
+                  <TabsTrigger value="photo" className="data-[state=active]:bg-[#c6d3e1]
+data-[state=active]:text-[#2d3e50]">
                     <Camera className="mr-2 h-4 w-4" />
                     AI Photo
                   </TabsTrigger>
@@ -95,9 +95,9 @@ data-[state=active]:text-white">
           {/* Step 3: Price Display */}
           <Card className="lg:col-span-1 border-slate-200 bg-white shadow-lg hover:shadow-elegant transition-all
 duration-300">
-            <CardHeader className="bg-blue-900 text-white rounded-t-lg">
+            <CardHeader className="bg-[#c6d3e1] text-[#2d3e50] rounded-t-lg">
               <CardTitle className="text-xl">3. Your Quote</CardTitle>
-              <CardDescription className="text-blue-100">
+              <CardDescription className="text-[#4a5f7a]">
                 Instant price estimate based on your specifications
               </CardDescription>
             </CardHeader>

@@ -14,7 +14,7 @@ export function ProductsSection() {
       <div className="mx-auto max-w-7xl px-6">
         <div className="text-center mb-20">
           <h2 className="text-5xl font-light text-slate-900 mb-6">
-            Our <span className="font-semibold text-blue-900">Products</span>
+            Our <span className="font-semibold text-[#7a8fa5]">Products</span>
           </h2>
           <p className="text-xl text-slate-600 max-w-3xl mx-auto leading-relaxed">
             Choose from our selection of premium architectural products, each designed with quality and precision
@@ -28,8 +28,8 @@ export function ProductsSection() {
 hover:transform hover:scale-105"
             >
               <CardHeader className="text-center pb-4">
-                <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-blue-50
-group-hover:bg-blue-100 transition-colors">
+                <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-[#f0f4f8]
+group-hover:bg-[#e2e9f0] transition-colors">
                   <span className="text-3xl">{p.icon}</span>
                 </div>
                 <CardTitle className="text-slate-900 text-2xl font-semibold">{p.name}</CardTitle>

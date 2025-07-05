@@ -14,7 +14,7 @@ export function HeroSection() {
           <h1 className="mb-8 text-6xl font-light leading-tight text-slate-900 md:text-7xl">
             Instant Quotes for
             <br />
-            <span className="font-semibold text-blue-900">
+            <span className="font-semibold text-[#7a8fa5]">
               Custom Architectural Products
             </span>
           </h1>
@@ -26,7 +26,7 @@ export function HeroSection() {
             <Link href="#measurement">
               <Button
                 size="lg"
-                className="group bg-blue-900 hover:bg-blue-800 text-white shadow-elegant px-8 py-4 text-lg"
+                className="group bg-[#c6d3e1] hover:bg-[#a8bcd2] text-[#2d3e50] shadow-elegant px-8 py-4 text-lg"
               >
                 Start Your Quote
                 <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
@@ -36,7 +36,7 @@ export function HeroSection() {
               <Button
                 size="lg"
                 variant="outline"
-                className="border-2 border-blue-900 text-blue-900 hover:bg-blue-900 hover:text-white px-8 py-4
+                className="border-2 border-[#c6d3e1] text-[#7a8fa5] hover:bg-[#c6d3e1] hover:text-[#2d3e50] px-8 py-4
 text-lg"
               >
                 Learn More
@@ -49,22 +49,22 @@ text-lg"
         <div className="mt-24 grid grid-cols-2 gap-8 md:grid-cols-4">
           <div className="animate-fade-up bg-white border border-slate-200 rounded-xl p-8 shadow-lg
 hover:shadow-elegant transition-all duration-300" style={{ animationDelay: '0.1s' }}>
-            <div className="text-4xl font-light text-blue-900">50K+</div>
+            <div className="text-4xl font-light text-[#7a8fa5]">50K+</div>
             <div className="text-sm text-slate-600 mt-2">Quotes Generated</div>
           </div>
           <div className="animate-fade-up bg-white border border-slate-200 rounded-xl p-8 shadow-lg
 hover:shadow-elegant transition-all duration-300" style={{ animationDelay: '0.2s' }}>
-            <div className="text-4xl font-light text-blue-900">98%</div>
+            <div className="text-4xl font-light text-[#7a8fa5]">98%</div>
             <div className="text-sm text-slate-600 mt-2">Accuracy Rate</div>
           </div>
           <div className="animate-fade-up bg-white border border-slate-200 rounded-xl p-8 shadow-lg
 hover:shadow-elegant transition-all duration-300" style={{ animationDelay: '0.3s' }}>
-            <div className="text-4xl font-light text-blue-900">24/7</div>
+            <div className="text-4xl font-light text-[#7a8fa5]">24/7</div>
             <div className="text-sm text-slate-600 mt-2">Available</div>
           </div>
           <div className="animate-fade-up bg-white border border-slate-200 rounded-xl p-8 shadow-lg
 hover:shadow-elegant transition-all duration-300" style={{ animationDelay: '0.4s' }}>
-            <div className="text-4xl font-light text-blue-900">3sec</div>
+            <div className="text-4xl font-light text-[#7a8fa5]">3sec</div>
             <div className="text-sm text-slate-600 mt-2">Quote Time</div>
           </div>
         </div>
@@ -72,7 +72,7 @@ hover:shadow-elegant transition-all duration-300" style={{ animationDelay: '0.4s
 
       {/* Elegant scroll indicator */}
       <div className="absolute bottom-10 left-1/2 -translate-x-1/2 animate-bounce">
-        <ChevronDown className="h-8 w-8 text-blue-900 opacity-70" />
+        <ChevronDown className="h-8 w-8 text-[#7a8fa5] opacity-70" />
       </div>
     </section>
   )

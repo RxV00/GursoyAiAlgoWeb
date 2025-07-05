@@ -3,20 +3,20 @@
 @layer base {
   :root {
     --background: 0 0% 100%; /* Pure white background */
-    --foreground: 215 28% 17%; /* Dark blue-gray text */
-    --primary: 215 84% 16%; /* Deep navy blue */
-    --primary-foreground: 0 0% 100%; /* White text on blue */
-    --secondary: 215 16% 47%; /* Medium blue-gray */
-    --secondary-foreground: 0 0% 100%; /* White text on secondary */
-    --accent: 215 84% 16%; /* Same deep navy for accents */
-    --accent-foreground: 0 0% 100%; /* White text on accent */
-    --muted: 215 16% 97%; /* Very light blue-gray */
-    --muted-foreground: 215 13% 35%; /* Muted blue-gray text */
+    --foreground: 211 31% 20%; /* Dark variant of #c6d3e1 for text */
+    --primary: 211 31% 83%; /* #c6d3e1 - Light blue-gray */
+    --primary-foreground: 211 31% 20%; /* Dark text on light blue */
+    --secondary: 211 20% 90%; /* Very light variant of #c6d3e1 */
+    --secondary-foreground: 211 31% 30%; /* Darker text on secondary */
+    --accent: 211 31% 75%; /* Slightly darker variant of #c6d3e1 for accents */
+    --accent-foreground: 211 31% 20%; /* Dark text on accent */
+    --muted: 211 10% 96%; /* Very subtle blue-gray */
+    --muted-foreground: 211 20% 50%; /* Medium blue-gray text */
     --destructive: 0 84.2% 60.2%; /* Red for errors */
     --destructive-foreground: 0 0% 100%; /* White text on red */
-    --border: 215 20% 93%; /* Light blue-gray borders */
+    --border: 211 20% 88%; /* Light blue-gray borders */
     --input: 0 0% 100%; /* White input backgrounds */
-    --ring: 215 84% 16%; /* Deep navy focus rings */
+    --ring: 211 31% 83%; /* #c6d3e1 focus rings */
     --radius: 0.5rem;
   }
 }
@@ -63,14 +63,14 @@
 
 /* Elegant gradient backgrounds */
 .bg-gradient-elegant {
-  background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+  background: linear-gradient(135deg, #c6d3e1 0%, #ffffff 100%);
 }
 
 .bg-gradient-subtle {
-  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+  background: linear-gradient(135deg, #ffffff 0%, #f0f4f8 100%);
 }
 
 /* Custom shadows for depth */
 .shadow-elegant {
-  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  box-shadow: 0 20px 25px -5px rgba(198, 211, 225, 0.1), 0 10px 10px -5px rgba(198, 211, 225, 0.04);
 }
