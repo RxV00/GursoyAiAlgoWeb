@@ -5,9 +5,10 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
 import { getProductById } from '@/lib/product-data'
+import { Measurements } from '@/lib/pricing'
 
 interface MeasurementFormProps {
-  onMeasurementsChange: (measurements: Record<string, number | string>) => void
+  onMeasurementsChange: (measurements: Measurements) => void
   productType: string | null
 }
 
@@ -25,7 +26,7 @@ export function MeasurementForm({ onMeasurementsChange, productType }: Measureme
     e.preventDefault()
     const ready = fields.every((f) => values[f])
     if (ready) {
-      const measurements: Record<string, number | string> = {}
+      const measurements: Measurements = {}
       fields.forEach((f) => {
         measurements[f] = parseFloat(values[f])
       })

@@ -6,6 +6,10 @@ export interface Measurements {
 
 export function calculatePrice(productId: string, measurements: Measurements): number | null {
   const product = getProductById(productId)
+  if (!product) {
+    return null
+  }
+  
   if ('width' in measurements && 'height' in measurements) {
     const area = ((measurements.width as number) * (measurements.height as number)) / 10000
     return area * product.basePrice

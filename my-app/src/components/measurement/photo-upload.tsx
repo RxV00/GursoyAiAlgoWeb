@@ -2,9 +2,10 @@
 import { useState } from 'react'
 import { Upload, Loader2 } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { Measurements } from '@/lib/pricing'
 
 interface PhotoUploadProps {
-  onMeasurementsExtracted: (measurements: any) => void
+  onMeasurementsExtracted: (measurements: Measurements) => void
   productType: string | null
 }
 

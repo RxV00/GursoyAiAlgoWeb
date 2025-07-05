@@ -1,10 +1,11 @@
 'use client'
 
 import { Button } from '@/components/ui/button'
+import { Measurements } from '@/lib/pricing'
 
 interface PriceDisplayProps {
   product: string | null
-  measurements: Record<string, number | string> | null
+  measurements: Measurements | null
   price: number | null
 }
 
