@@ -8,11 +8,11 @@ import { MeasurementForm } from '@/components/forms/measurement-form'
 import { PhotoUpload } from '@/components/measurement/photo-upload'
 import { ProductSelector } from '@/components/product/product-selecter'
 import { PriceDisplay } from '@/components/pricing/price-display'
-import { calculatePrice } from '@/lib/pricing'
+import { calculatePrice, Measurements } from '@/lib/pricing'
 
 export function MeasurementSection() {
   const [selectedProduct, setSelectedProduct] = useState<string | null>(null)
-  const [measurements, setMeasurements] = useState<any>(null)
+  const [measurements, setMeasurements] = useState<Measurements | null>(null)
   const [price, setPrice] = useState<number | null>(null)
 
   useEffect(() => {
