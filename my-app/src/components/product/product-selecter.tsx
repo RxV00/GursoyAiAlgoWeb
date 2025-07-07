@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { Check, ChevronDown, ChevronRight, Play } from 'lucide-react'
+import { motion, AnimatePresence } from 'framer-motion'
 import { cn } from '@/lib/utils'
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible'
 import { Button } from '@/components/ui/button'
@@ -183,7 +184,12 @@ export function ProductSelector({ onProductSelect, selectedProduct }: ProductSel
  font-semibold"
               >
                 <span className="text-gray-800">{category.name}</span>
-                {isCategoryOpen ? <ChevronDown className="h-5 w-5" /> : <ChevronRight className="h-5 w-5" />}
+                <motion.div
+                  animate={{ rotate: isCategoryOpen ? 90 : 0 }}
+                  transition={{ duration: 0.2, ease: "easeInOut" }}
+                >
+                  <ChevronRight className="h-5 w-5" />
+                </motion.div>
               </Button>
             </CollapsibleTrigger>
             <CollapsibleContent className="mt-3 space-y-3">
@@ -202,8 +208,12 @@ toggleWindowType(windowType.id)}>
 bg-white"
                           >
                             <span className="font-semibold text-gray-700">{windowType.name}</span>
-                            {isWindowTypeOpen ? <ChevronDown className="h-4 w-4" /> : <ChevronRight
-className="h-4 w-4" />}
+                            <motion.div
+                              animate={{ rotate: isWindowTypeOpen ? 90 : 0 }}
+                              transition={{ duration: 0.2, ease: "easeInOut" }}
+                            >
+                              <ChevronRight className="h-4 w-4" />
+                            </motion.div>
                           </Button>
                         </CollapsibleTrigger>
                         <CollapsibleContent className="mt-2 space-y-3">
@@ -223,8 +233,12 @@ toggleBrand(brandKey)}>
 border-[#c6d3e1] bg-white"
                                     >
                                       <span className="font-medium text-gray-700">{brand.brandName}</span>
-                                      {isBrandOpen ? <ChevronDown className="h-4 w-4" /> : <ChevronRight
-className="h-4 w-4" />}
+                                      <motion.div
+                                        animate={{ rotate: isBrandOpen ? 90 : 0 }}
+                                        transition={{ duration: 0.2, ease: "easeInOut" }}
+                                      >
+                                        <ChevronRight className="h-4 w-4" />
+                                      </motion.div>
                                     </Button>
                                   </CollapsibleTrigger>
                                   <CollapsibleContent className="mt-2 space-y-2">
@@ -266,24 +280,38 @@ hover:bg-[#c6d3e1]"
                                             </div>
 
                                             {/* Product-specific videos - only show when clicked */}
-                                            {isProductOpen && productVideos.length > 0 && (
-                                              <div className="bg-[#c6d3e1] p-3 rounded-lg ml-4">
-                                                <h6 className="text-xs font-medium text-gray-600
+                                            <AnimatePresence>
+                                              {isProductOpen && productVideos.length > 0 && (
+                                                <motion.div
+                                                  initial={{ opacity: 0, height: 0 }}
+                                                  animate={{ opacity: 1, height: "auto" }}
+                                                  exit={{ opacity: 0, height: 0 }}
+                                                  transition={{ duration: 0.3, ease: "easeInOut" }}
+                                                  className="bg-[#c6d3e1] p-3 rounded-lg ml-4 overflow-hidden"
+                                                >
+                                                  <h6 className="text-xs font-medium text-gray-600
 mb-2">{product.name} Örnek Videolar</h6>
-                                                <div className="grid grid-cols-1 gap-2">
-                                                  {productVideos.map((video, index) => (
-                                                    <div key={index} className="relative bg-white rounded-lg
-aspect-video flex items-center justify-center hover:bg-[#c6d3e1] transition-colors cursor-pointer">
-                                                      <Play className="h-6 w-6 text-gray-600" />
-                                                      <div className="absolute bottom-1 left-1 bg-black
+                                                  <div className="grid grid-cols-1 gap-2">
+                                                    {productVideos.map((video, index) => (
+                                                      <motion.div
+                                                        key={index}
+                                                        initial={{ opacity: 0, scale: 0.9 }}
+                                                        animate={{ opacity: 1, scale: 1 }}
+                                                        transition={{ duration: 0.2, delay: index * 0.1 }}
+                                                        className="relative bg-white rounded-lg
+aspect-video flex items-center justify-center hover:bg-[#c6d3e1] transition-colors cursor-pointer"
+                                                      >
+                                                        <Play className="h-6 w-6 text-gray-600" />
+                                                        <div className="absolute bottom-1 left-1 bg-black
 bg-opacity-50 text-white text-xs px-1 py-0.5 rounded">
-                                                        Video {index + 1}
-                                                      </div>
-                                                    </div>
-                                                  ))}
-                                                </div>
-                                              </div>
-                                            )}
+                                                          Video {index + 1}
+                                                        </div>
+                                                      </motion.div>
+                                                    ))}
+                                                  </div>
+                                                </motion.div>
+                                              )}
+                                            </AnimatePresence>
                                           </div>
                                         )
                                       })}
@@ -310,8 +338,12 @@ toggleWindowType(category.id)}>
 bg-white"
                       >
                         <span className="font-semibold text-gray-700">Ürünler</span>
-                        {openWindowTypes.includes(category.id) ? <ChevronDown className="h-4 w-4" /> :
-<ChevronRight className="h-4 w-4" />}
+                        <motion.div
+                          animate={{ rotate: openWindowTypes.includes(category.id) ? 90 : 0 }}
+                          transition={{ duration: 0.2, ease: "easeInOut" }}
+                        >
+                          <ChevronRight className="h-4 w-4" />
+                        </motion.div>
                       </Button>
                     </CollapsibleTrigger>
                     <CollapsibleContent className="mt-2 space-y-4">
@@ -351,24 +383,38 @@ bg-white"
                               </div>
 
                               {/* Product-specific videos - only show when clicked */}
-                              {isProductOpen && productVideos.length > 0 && (
-                                <div className="bg-[#c6d3e1] p-3 rounded-lg ml-4">
-                                  <h6 className="text-xs font-medium text-gray-600 mb-2">{product.name} Örnek
+                              <AnimatePresence>
+                                {isProductOpen && productVideos.length > 0 && (
+                                  <motion.div
+                                    initial={{ opacity: 0, height: 0 }}
+                                    animate={{ opacity: 1, height: "auto" }}
+                                    exit={{ opacity: 0, height: 0 }}
+                                    transition={{ duration: 0.3, ease: "easeInOut" }}
+                                    className="bg-[#c6d3e1] p-3 rounded-lg ml-4 overflow-hidden"
+                                  >
+                                    <h6 className="text-xs font-medium text-gray-600 mb-2">{product.name} Örnek
 Videolar</h6>
-                                  <div className="grid grid-cols-1 gap-2">
-                                    {productVideos.map((video, index) => (
-                                      <div key={index} className="relative bg-white rounded-lg aspect-video flex
-items-center justify-center hover:bg-[#c6d3e1] transition-colors cursor-pointer">
-                                        <Play className="h-6 w-6 text-gray-600" />
-                                        <div className="absolute bottom-1 left-1 bg-black bg-opacity-50
+                                    <div className="grid grid-cols-1 gap-2">
+                                      {productVideos.map((video, index) => (
+                                        <motion.div
+                                          key={index}
+                                          initial={{ opacity: 0, scale: 0.9 }}
+                                          animate={{ opacity: 1, scale: 1 }}
+                                          transition={{ duration: 0.2, delay: index * 0.1 }}
+                                          className="relative bg-white rounded-lg aspect-video flex
+items-center justify-center hover:bg-[#c6d3e1] transition-colors cursor-pointer"
+                                        >
+                                          <Play className="h-6 w-6 text-gray-600" />
+                                          <div className="absolute bottom-1 left-1 bg-black bg-opacity-50
 text-white text-xs px-1 py-0.5 rounded">
-                                          Video {index + 1}
-                                        </div>
-                                      </div>
-                                    ))}
-                                  </div>
-                                </div>
-                              )}
+                                            Video {index + 1}
+                                          </div>
+                                        </motion.div>
+                                      ))}
+                                    </div>
+                                  </motion.div>
+                                )}
+                              </AnimatePresence>
                             </div>
                           )
                         })}
