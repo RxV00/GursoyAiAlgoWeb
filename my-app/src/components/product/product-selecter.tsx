@@ -6,7 +6,6 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { cn } from '@/lib/utils'
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible'
 import { Button } from '@/components/ui/button'
-
 import { productCategories } from '@/lib/product-data'
 
 interface ProductSelectorProps {

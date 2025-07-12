@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button'
 
 export function HeroSection() {
   return (
-    <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-white mt-20">
+    <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-white pt-20">
       {/* Subtle geometric pattern */}
 
       <div className="relative z-10 mx-auto max-w-6xl px-6 text-center">
