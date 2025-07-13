@@ -120,7 +120,8 @@ export const NavItems = ({ items, className, onItemClick }: NavItemsProps) => {
     <motion.div
       onMouseLeave={() => setHovered(null)}
       className={cn(
-        "absolute inset-0 hidden flex-1 flex-row items-center justify-center space-x-2 text-sm font-medium text-zinc-600 transition duration-200 hover:text-zinc-800 lg:flex lg:space-x-2",
+        // Desktop: absolute positioned for navbar, Mobile: flex column for mobile menu
+        "flex flex-col space-y-2 lg:absolute lg:inset-0 lg:hidden lg:flex-1 lg:flex-row lg:items-center lg:justify-center lg:space-y-0 lg:space-x-2 lg:flex text-sm font-medium text-zinc-600 transition duration-200 hover:text-zinc-800",
         className,
       )}
     >
@@ -128,14 +129,14 @@ export const NavItems = ({ items, className, onItemClick }: NavItemsProps) => {
         <a
           onMouseEnter={() => setHovered(idx)}
           onClick={onItemClick}
-          className="relative px-4 py-2 text-neutral-600 dark:text-neutral-300"
+          className="relative px-4 py-2 text-neutral-600 dark:text-neutral-300 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors duration-200"
           key={`link-${idx}`}
           href={item.link}
         >
           {hovered === idx && (
             <motion.div
               layoutId="hovered"
-              className="absolute inset-0 h-full w-full rounded-full bg-gray-100 dark:bg-neutral-800"
+              className="absolute inset-0 h-full w-full rounded-lg bg-gray-100 dark:bg-neutral-800"
             />
           )}
           <span className="relative z-20">{item.name}</span>
@@ -162,7 +163,7 @@ export const MobileNav = ({ children, className, visible }: MobileNavProps) => {
         damping: 50,
       }}
       className={cn(
-        "relative z-50 mx-auto flex w-full max-w-[calc(100vw-2rem)] flex-col items-center justify-between rounded-full bg-transparent px-4 py-2 lg:hidden",
+        "relative z-50 mx-auto flex w-full max-w-[calc(100vw-1rem)] flex-col items-center justify-between rounded-full bg-transparent px-3 py-2 lg:hidden",
         visible && "bg-white/80 dark:bg-neutral-950/80",
         className,
       )}
@@ -179,7 +180,7 @@ export const MobileNavHeader = ({
   return (
     <div
       className={cn(
-        "flex w-full flex-row items-center justify-between",
+        "flex w-full flex-row items-center justify-between px-2 py-1",
         className,
       )}
     >
@@ -219,10 +220,18 @@ export const MobileNavToggle = ({
   isOpen: boolean;
   onClick: () => void;
 }) => {
-  return isOpen ? (
-    <IconX className="text-black dark:text-white" onClick={onClick} />
-  ) : (
-    <IconMenu2 className="text-black dark:text-white" onClick={onClick} />
+  return (
+    <button 
+      onClick={onClick}
+      className="relative z-20 flex h-8 w-8 items-center justify-center rounded-lg text-black dark:text-white hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors duration-200"
+      aria-label={isOpen ? "Close menu" : "Open menu"}
+    >
+      {isOpen ? (
+        <IconX className="h-5 w-5" />
+      ) : (
+        <IconMenu2 className="h-5 w-5" />
+      )}
+    </button>
   );
 };
 
@@ -230,18 +239,18 @@ export const NavbarLogo = () => {
   return (
     <Link
       href="/"
-      className="relative z-20 mr-6 flex items-center space-x-3 px-2 py-2 text-sm font-normal text-black hover:opacity-90 transition-opacity duration-200"
+      className="relative z-20 mr-3 flex items-center space-x-2 px-2 py-2 text-sm font-normal text-black hover:opacity-90 transition-opacity duration-200"
     >
-      <div className="relative w-10 h-10 bg-gradient-to-br from-[#c6d3e1] to-[#7a8fa5] rounded-xl flex items-center justify-center shadow-lg hover:shadow-xl transition-all duration-300 group">
-        <span className="text-white font-bold text-xl tracking-tight">G</span>
-        <div className="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent rounded-xl"></div>
-        <div className="absolute inset-0 border border-white/30 rounded-xl"></div>
+      <div className="relative w-8 h-8 lg:w-10 lg:h-10 bg-gradient-to-br from-[#c6d3e1] to-[#7a8fa5] rounded-lg lg:rounded-xl flex items-center justify-center shadow-lg hover:shadow-xl transition-all duration-300 group flex-shrink-0">
+        <span className="text-white font-bold text-lg lg:text-xl tracking-tight">G</span>
+        <div className="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent rounded-lg lg:rounded-xl"></div>
+        <div className="absolute inset-0 border border-white/30 rounded-lg lg:rounded-xl"></div>
       </div>
-      <div className="flex flex-col">
-        <span className="font-bold text-xl text-slate-900 dark:text-white leading-tight tracking-tight">
+      <div className="flex flex-col min-w-0">
+        <span className="font-bold text-lg lg:text-xl text-slate-900 dark:text-white leading-tight tracking-tight whitespace-nowrap">
           Gursoy<span className="text-[#7a8fa5]">lar</span>
         </span>
-        <span className="text-xs text-slate-500 dark:text-slate-400 font-medium uppercase tracking-widest">
+        <span className="text-xs text-slate-500 dark:text-slate-400 font-medium uppercase tracking-widest whitespace-nowrap hidden sm:block">
           Architecture
         </span>
       </div>
