@@ -154,7 +154,11 @@ export const MobileNav = ({ children, className, visible }: MobileNavProps) => {
         boxShadow: visible
           ? "0 0 24px rgba(34, 42, 53, 0.06), 0 1px 1px rgba(0, 0, 0, 0.05), 0 0 0 1px rgba(34, 42, 53, 0.04), 0 0 4px rgba(34, 42, 53, 0.08), 0 16px 68px rgba(47, 48, 55, 0.05), 0 1px 0 rgba(255, 255, 255, 0.1) inset"
           : "none",
-        width: visible ? "90%" : "100%",
+        width: visible ? "75%" : "100%",
+        paddingLeft: visible ? "8px" : "16px",
+        paddingRight: visible ? "8px" : "16px",
+        paddingTop: visible ? "4px" : "8px",
+        paddingBottom: visible ? "4px" : "8px",
         y: visible ? 20 : 0,
       }}
       transition={{
@@ -163,7 +167,7 @@ export const MobileNav = ({ children, className, visible }: MobileNavProps) => {
         damping: 50,
       }}
       className={cn(
-        "relative z-50 mx-auto flex w-full max-w-[calc(100vw-1rem)] flex-col items-center justify-between rounded-full bg-transparent px-3 py-2 lg:hidden",
+        "relative z-50 mx-auto flex w-full max-w-none flex-col items-center justify-between rounded-full bg-transparent px-4 py-2 lg:hidden",
         visible && "bg-white/80 dark:bg-neutral-950/80",
         className,
       )}
@@ -180,7 +184,7 @@ export const MobileNavHeader = ({
   return (
     <div
       className={cn(
-        "flex w-full flex-row items-center justify-between px-2 py-1",
+        "flex w-full flex-row items-center justify-between min-w-0",
         className,
       )}
     >
@@ -223,7 +227,7 @@ export const MobileNavToggle = ({
   return (
     <button 
       onClick={onClick}
-      className="relative z-20 flex h-8 w-8 items-center justify-center rounded-lg text-black dark:text-white hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors duration-200"
+      className="relative z-20 flex h-8 w-8 items-center justify-center rounded-lg text-black dark:text-white hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors duration-200 flex-shrink-0"
       aria-label={isOpen ? "Close menu" : "Open menu"}
     >
       {isOpen ? (
@@ -239,18 +243,18 @@ export const NavbarLogo = () => {
   return (
     <Link
       href="/"
-      className="relative z-20 mr-3 flex items-center space-x-2 px-2 py-2 text-sm font-normal text-black hover:opacity-90 transition-opacity duration-200"
+      className="relative z-20 flex items-center space-x-2 text-sm font-normal text-black hover:opacity-90 transition-opacity duration-200 flex-1 min-w-0"
     >
       <div className="relative w-8 h-8 lg:w-10 lg:h-10 bg-gradient-to-br from-[#c6d3e1] to-[#7a8fa5] rounded-lg lg:rounded-xl flex items-center justify-center shadow-lg hover:shadow-xl transition-all duration-300 group flex-shrink-0">
-        <span className="text-white font-bold text-lg lg:text-xl tracking-tight">G</span>
+        <span className="text-white font-bold text-sm lg:text-xl tracking-tight">G</span>
         <div className="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent rounded-lg lg:rounded-xl"></div>
         <div className="absolute inset-0 border border-white/30 rounded-lg lg:rounded-xl"></div>
       </div>
-      <div className="flex flex-col min-w-0">
-        <span className="font-bold text-lg lg:text-xl text-slate-900 dark:text-white leading-tight tracking-tight whitespace-nowrap">
+      <div className="flex flex-col min-w-0 flex-1">
+        <span className="font-bold text-sm lg:text-xl text-slate-900 dark:text-white leading-tight tracking-tight">
           Gursoy<span className="text-[#7a8fa5]">lar</span>
         </span>
-        <span className="text-xs text-slate-500 dark:text-slate-400 font-medium uppercase tracking-widest whitespace-nowrap hidden sm:block">
+        <span className="text-xs text-slate-500 dark:text-slate-400 font-medium uppercase tracking-widest hidden lg:block">
           Architecture
         </span>
       </div>
