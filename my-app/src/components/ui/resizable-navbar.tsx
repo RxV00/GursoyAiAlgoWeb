@@ -100,11 +100,11 @@ export const NavBody = ({ children, className, visible }: NavBodyProps) => {
         damping: 50,
       }}
       style={{
-        minWidth: "800px",
+        minWidth: visible ? "min(1000px, 90vw)" : "min(800px, 90vw)",
       }}
       className={cn(
-        "relative z-[60] mx-auto hidden w-full max-w-7xl flex-row items-center justify-between self-start rounded-full bg-transparent px-4 py-2 lg:flex dark:bg-transparent",
-        visible && "bg-white/80 dark:bg-neutral-950/80",
+        "relative z-[60] mx-auto hidden w-full max-w-7xl flex-row items-center justify-between self-start rounded-full bg-transparent px-4 py-2 lg:flex",
+        visible && "bg-white/80",
         className,
       )}
     >
@@ -121,7 +121,7 @@ export const NavItems = ({ items, className, onItemClick }: NavItemsProps) => {
       onMouseLeave={() => setHovered(null)}
       className={cn(
         // Desktop: absolute positioned for navbar, Mobile: flex column for mobile menu
-        "flex flex-col space-y-2 lg:absolute lg:inset-0 lg:hidden lg:flex-1 lg:flex-row lg:items-center lg:justify-center lg:space-y-0 lg:space-x-2 lg:flex text-sm font-medium text-zinc-600 transition duration-200 hover:text-zinc-800",
+        "flex flex-col space-y-2 lg:absolute lg:inset-0 lg:flex lg:flex-1 lg:flex-row lg:items-center lg:justify-center lg:space-y-0 lg:space-x-2 text-sm font-medium text-zinc-600 transition duration-200 hover:text-zinc-800",
         className,
       )}
     >
@@ -129,14 +129,14 @@ export const NavItems = ({ items, className, onItemClick }: NavItemsProps) => {
         <a
           onMouseEnter={() => setHovered(idx)}
           onClick={onItemClick}
-          className="relative px-4 py-2 text-neutral-600 dark:text-neutral-300 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors duration-200"
+          className="relative px-4 py-2 text-neutral-600 rounded-lg hover:bg-gray-100 transition-colors duration-200"
           key={`link-${idx}`}
           href={item.link}
         >
           {hovered === idx && (
             <motion.div
               layoutId="hovered"
-              className="absolute inset-0 h-full w-full rounded-lg bg-gray-100 dark:bg-neutral-800"
+              className="absolute inset-0 h-full w-full rounded-lg bg-gray-100"
             />
           )}
           <span className="relative z-20">{item.name}</span>
@@ -154,7 +154,7 @@ export const MobileNav = ({ children, className, visible }: MobileNavProps) => {
         boxShadow: visible
           ? "0 0 24px rgba(34, 42, 53, 0.06), 0 1px 1px rgba(0, 0, 0, 0.05), 0 0 0 1px rgba(34, 42, 53, 0.04), 0 0 4px rgba(34, 42, 53, 0.08), 0 16px 68px rgba(47, 48, 55, 0.05), 0 1px 0 rgba(255, 255, 255, 0.1) inset"
           : "none",
-        width: visible ? "75%" : "100%",
+        width: visible ? "min(75%, calc(100vw - 32px))" : "100%",
         paddingLeft: visible ? "8px" : "16px",
         paddingRight: visible ? "8px" : "16px",
         paddingTop: visible ? "4px" : "8px",
@@ -167,8 +167,8 @@ export const MobileNav = ({ children, className, visible }: MobileNavProps) => {
         damping: 50,
       }}
       className={cn(
-        "relative z-50 mx-auto flex w-full max-w-none flex-col items-center justify-between rounded-full bg-transparent px-4 py-2 lg:hidden",
-        visible && "bg-white/80 dark:bg-neutral-950/80",
+        "relative z-50 mx-auto flex w-full max-w-full flex-col items-center justify-between rounded-full bg-transparent px-4 py-2 lg:hidden",
+        visible && "bg-white/80",
         className,
       )}
     >
@@ -206,7 +206,7 @@ export const MobileNavMenu = ({
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           className={cn(
-            "absolute inset-x-0 top-16 z-50 flex w-full flex-col items-start justify-start gap-4 rounded-lg bg-white px-4 py-8 shadow-[0_0_24px_rgba(34,_42,_53,_0.06),_0_1px_1px_rgba(0,_0,_0,_0.05),_0_0_0_1px_rgba(34,_42,_53,_0.04),_0_0_4px_rgba(34,_42,_53,_0.08),_0_16px_68px_rgba(47,_48,_55,_0.05),_0_1px_0_rgba(255,_255,_255,_0.1)_inset] dark:bg-neutral-950",
+            "absolute inset-x-0 top-16 z-50 flex w-full max-w-full flex-col items-start justify-start gap-4 rounded-lg bg-white px-4 py-8 shadow-[0_0_24px_rgba(34,_42,_53,_0.06),_0_1px_1px_rgba(0,_0,_0,_0.05),_0_0_0_1px_rgba(34,_42,_53,_0.04),_0_0_4px_rgba(34,_42,_53,_0.08),_0_16px_68px_rgba(47,_48,_55,_0.05),_0_1px_0_rgba(255,_255,_255,_0.1)_inset]",
             className,
           )}
         >
@@ -227,7 +227,7 @@ export const MobileNavToggle = ({
   return (
     <button 
       onClick={onClick}
-      className="relative z-20 flex h-8 w-8 items-center justify-center rounded-lg text-black dark:text-white hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors duration-200 flex-shrink-0"
+      className="relative z-20 flex h-8 w-8 items-center justify-center rounded-lg text-black hover:bg-gray-100 transition-colors duration-200 flex-shrink-0"
       aria-label={isOpen ? "Close menu" : "Open menu"}
     >
       {isOpen ? (
@@ -251,10 +251,10 @@ export const NavbarLogo = () => {
         <div className="absolute inset-0 border border-white/30 rounded-lg lg:rounded-xl"></div>
       </div>
       <div className="flex flex-col min-w-0 flex-1">
-        <span className="font-bold text-sm lg:text-xl text-slate-900 dark:text-white leading-tight tracking-tight">
+        <span className="font-bold text-sm lg:text-xl text-slate-900 leading-tight tracking-tight">
           Gursoy<span className="text-[#7a8fa5]">lar</span>
         </span>
-        <span className="text-xs text-slate-500 dark:text-slate-400 font-medium uppercase tracking-widest hidden lg:block">
+        <span className="text-xs text-slate-500 font-medium uppercase tracking-widest hidden lg:block">
           Architecture
         </span>
       </div>
@@ -285,7 +285,7 @@ export const NavbarButton = ({
   const variantStyles = {
     primary:
       "shadow-[0_0_24px_rgba(34,_42,_53,_0.06),_0_1px_1px_rgba(0,_0,_0,_0.05),_0_0_0_1px_rgba(34,_42,_53,_0.04),_0_0_4px_rgba(34,_42,_53,_0.08),_0_16px_68px_rgba(47,_48,_55,_0.05),_0_1px_0_rgba(255,_255,_255,_0.1)_inset]",
-    secondary: "bg-transparent shadow-none dark:text-white",
+    secondary: "bg-transparent shadow-none text-slate-600",
     dark: "bg-black text-white shadow-[0_0_24px_rgba(34,_42,_53,_0.06),_0_1px_1px_rgba(0,_0,_0,_0.05),_0_0_0_1px_rgba(34,_42,_53,_0.04),_0_0_4px_rgba(34,_42,_53,_0.08),_0_16px_68px_rgba(47,_48,_55,_0.05),_0_1px_0_rgba(255,_255,_255,_0.1)_inset]",
     gradient:
       "bg-gradient-to-b from-blue-500 to-blue-700 text-white shadow-[0px_2px_0px_0px_rgba(255,255,255,0.3)_inset]",
