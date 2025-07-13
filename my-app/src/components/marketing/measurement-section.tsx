@@ -6,9 +6,10 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { MeasurementForm } from '@/components/forms/measurement-form'
 import { PhotoUpload } from '@/components/measurement/photo-upload'
-import { ProductSelector } from '@/components/product/product-selecter'
+// import { ProductSelector } from '@/components/product/product-selecter'
 import { PriceDisplay } from '@/components/pricing/price-display'
 import { calculatePrice, Measurements } from '@/lib/pricing'
+import { ProductSelector } from '../product/product-selecter'
 
 export function MeasurementSection() {
   const [selectedProduct, setSelectedProduct] = useState<string | null>(null)

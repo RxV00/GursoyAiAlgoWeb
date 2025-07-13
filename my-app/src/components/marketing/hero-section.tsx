@@ -7,6 +7,8 @@ import Link from 'next/link'
 import { ArrowRight, ChevronDown } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import CountUp from '@/components/ui/CountUp'
+import { ShootingStars } from '@/components/ui/shooting-stars'
+import { StaticStars } from '@/components/ui/static-stars'
 
 export function HeroSection() {
   const controls = useAnimation()
@@ -68,8 +70,28 @@ export function HeroSection() {
   return (
     <section
       ref={ref}
-      className="relative min-h-screen flex items-center justify-center overflow-hidden bg-white pt-20"
+      className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-br from-white to-slate-50 pt-20"
     >
+      {/* Static Stars Background */}
+      <StaticStars
+        starCount={150}
+        starColor="#c6d3e1"
+        className="absolute inset-0 z-0"
+      />
+      
+      {/* Shooting Stars Background */}
+      <ShootingStars
+        minSpeed={20}
+        maxSpeed={35}
+        minDelay={800}
+        maxDelay={2000}
+        starColor="#7a8fa5"
+        trailColor="#c6d3e1"
+        starWidth={20}
+        starHeight={3}
+        className="absolute inset-0 z-[1]"
+      />
+      
       {/* Sliding Window Animation Layer */}
       <div className="absolute inset-0 z-30">
         {/* Left Window Panel */}

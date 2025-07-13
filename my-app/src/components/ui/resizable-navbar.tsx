@@ -1,6 +1,7 @@
 "use client";
 import { cn } from "@/lib/utils";
 import { IconMenu2, IconX } from "@tabler/icons-react";
+import Link from "next/link";
 import {
   motion,
   AnimatePresence,
@@ -230,15 +231,24 @@ export const MobileNavToggle = ({
 
 export const NavbarLogo = () => {
   return (
-    <a
-      href="#"
-      className="relative z-20 mr-4 flex items-center space-x-2 px-2 py-1 text-sm font-normal text-black"
+    <Link
+      href="/"
+      className="relative z-20 mr-6 flex items-center space-x-3 px-2 py-2 text-sm font-normal text-black hover:opacity-90 transition-opacity duration-200"
     >
-      <div className="w-8 h-8 bg-gradient-to-br from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
-        <span className="text-white font-bold text-lg">G</span>
+      <div className="relative w-10 h-10 bg-gradient-to-br from-[#c6d3e1] to-[#7a8fa5] rounded-xl flex items-center justify-center shadow-lg hover:shadow-xl transition-all duration-300 group">
+        <span className="text-white font-bold text-xl tracking-tight">G</span>
+        <div className="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent rounded-xl"></div>
+        <div className="absolute inset-0 border border-white/30 rounded-xl"></div>
       </div>
-      <span className="font-medium text-black dark:text-white">Gursoylar</span>
-    </a>
+      <div className="flex flex-col">
+        <span className="font-bold text-xl text-slate-900 dark:text-white leading-tight tracking-tight">
+          Gursoy<span className="text-[#7a8fa5]">lar</span>
+        </span>
+        <span className="text-xs text-slate-500 dark:text-slate-400 font-medium uppercase tracking-widest">
+          Architecture
+        </span>
+      </div>
+    </Link>
   );
 };
 

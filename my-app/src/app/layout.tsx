@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import './globals.css'
 import { AppNavbar } from '@/components/layout/navbar'
+import { Footer } from '@/components/layout/footer'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -21,6 +22,7 @@ export default function RootLayout({
         <div className="relative w-full">
           <AppNavbar />
           {children}
+          <Footer />
         </div>
       </body>
     </html>
