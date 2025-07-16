@@ -34,40 +34,40 @@ export function Header() {
     <Navbar className="fixed top-0 inset-x-0 z-50 w-full">
       {/* Desktop Navigation */}
       <NavBody className="bg-white/90 backdrop-blur-md border-b border-slate-200">
-          {/* Logo */}
-          <Link href="/" className="flex items-center space-x-3 relative z-20">
-            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-[#c6d3e1] shadow-lg">
-              <span className="text-xl font-semibold text-white">PS</span>
-            </div>
-            <span className="text-2xl font-medium italic text-slate-900">
-              Gursoy<span className="font-semibold text-[#7a8fa5]">lar</span>
-            </span>
-          </Link>
-
-          {/* Navigation Items */}
-          <NavItems 
-            items={navigation} 
-            className="text-slate-600 hover:text-[#7a8fa5]"
-          />
-
-          {/* Action Buttons */}
-          <div className="flex items-center space-x-4 relative z-20">
-            <NavbarButton 
-              href="/login"
-              variant="secondary" 
-              className="text-slate-600 hover:text-[#7a8fa5] hover:bg-[#f0f4f8] bg-transparent shadow-none"
-            >
-              Sign In
-            </NavbarButton>
-            <NavbarButton 
-              href="/register"
-              variant="primary" 
-              className="bg-[#c6d3e1] hover:bg-[#a8bcd2] text-[#2d3e50] shadow-lg border-none"
-            >
-              Get Started
-            </NavbarButton>
+        {/* Logo */}
+        <Link href="/" className="flex items-center space-x-3 relative z-20">
+          <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-[#c6d3e1] shadow-lg">
+            <span className="text-xl font-semibold text-white">PS</span>
           </div>
-        </NavBody>
+          <span className="text-2xl font-medium italic text-slate-900">
+            Gursoy<span className="font-semibold text-[#7a8fa5]">lar</span>
+          </span>
+        </Link>
+
+        {/* Navigation Items */}
+        <NavItems 
+          items={navigation} 
+          className="text-slate-600 hover:text-[#7a8fa5]"
+        />
+
+        {/* Action Buttons */}
+        <div className="flex items-center space-x-4 relative z-20">
+          <NavbarButton 
+            href="/login"
+            variant="secondary" 
+            className="text-slate-600 hover:text-[#7a8fa5] hover:bg-[#f0f4f8] bg-transparent shadow-none"
+          >
+            Sign In
+          </NavbarButton>
+          <NavbarButton 
+            href="/register"
+            variant="primary" 
+            className="bg-[#c6d3e1] hover:bg-[#a8bcd2] text-[#2d3e50] shadow-lg border-none"
+          >
+            Get Started
+          </NavbarButton>
+        </div>
+      </NavBody>
 
       {/* Mobile Navigation */}
       <MobileNav className="bg-white/90 backdrop-blur-md border-b border-slate-200">
