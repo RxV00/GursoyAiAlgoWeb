@@ -21,11 +21,14 @@ export function HeroSection() {
 
   useEffect(() => {
     if (inView) {
-      controls.start('visible')
+      // Small delay to let navbar settle, especially on mobile
+      setTimeout(() => {
+        controls.start('visible')
+      }, 200)
       // Show main hero content after sliding animation completes
       setTimeout(() => {
         setShowMainHero(true)
-      }, 800) // Delay to let sliding animation complete
+      }, 1000) // Increased delay to account for initial delay
     }
   }, [controls, inView])
 
@@ -70,7 +73,7 @@ export function HeroSection() {
   return (
     <section
       ref={ref}
-      className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-br from-white to-slate-50 pt-20"
+      className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-br from-white to-slate-50 pt-24 md:pt-20"
     >
       {/* Static Stars Background */}
       <StaticStars
