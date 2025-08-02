@@ -31,7 +31,7 @@ export function Header() {
   }
 
   return (
-    <Navbar className="fixed top-0 inset-x-0 z-50 w-full">
+    <Navbar className="fixed top-0 inset-x-0 z-[9999] w-full">
       {/* Desktop Navigation */}
       <NavBody className="bg-white/90 backdrop-blur-md border-b border-slate-200">
         {/* Logo */}

@@ -2,7 +2,7 @@
 	Installed from https://reactbits.dev/ts/tailwind/
 */
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useMemo } from "react";
 import { useInView, useMotionValue, useSpring } from "framer-motion";
 interface CountUpProps {
   to: number;
@@ -32,15 +32,19 @@ export default function CountUp({
   const ref = useRef<HTMLSpanElement>(null);
   const motionValue = useMotionValue(direction === "down" ? to : from);
 
-  const damping = 20 + 40 * (1 / duration);
-  const stiffness = 100 * (1 / duration);
+  // Memoize spring configuration for better performance
+  const springConfig = useMemo(() => {
+    const damping = 20 + 40 * (1 / duration);
+    const stiffness = 100 * (1 / duration);
+    return { damping, stiffness };
+  }, [duration]);
 
-  const springValue = useSpring(motionValue, {
-    damping,
-    stiffness,
+  const springValue = useSpring(motionValue, springConfig);
+
+  const isInView = useInView(ref, { 
+    once: true, 
+    margin: "0px"
   });
-
-  const isInView = useInView(ref, { once: true, margin: "0px" });
 
   useEffect(() => {
     if (ref.current) {
@@ -49,16 +53,19 @@ export default function CountUp({
   }, [from, to, direction]);
 
   useEffect(() => {
+    let timeoutId: NodeJS.Timeout;
+    let durationTimeoutId: NodeJS.Timeout;
+    
     if (isInView && startWhen) {
       if (typeof onStart === "function") {
         onStart();
       }
 
-      const timeoutId = setTimeout(() => {
+      timeoutId = setTimeout(() => {
         motionValue.set(direction === "down" ? from : to);
       }, delay * 1000);
 
-      const durationTimeoutId = setTimeout(
+      durationTimeoutId = setTimeout(
         () => {
           if (typeof onEnd === "function") {
             onEnd();
@@ -66,12 +73,12 @@ export default function CountUp({
         },
         delay * 1000 + duration * 1000
       );
-
-      return () => {
-        clearTimeout(timeoutId);
-        clearTimeout(durationTimeoutId);
-      };
     }
+
+    return () => {
+      if (timeoutId) clearTimeout(timeoutId);
+      if (durationTimeoutId) clearTimeout(durationTimeoutId);
+    };
   }, [
     isInView,
     startWhen,
@@ -88,24 +95,35 @@ export default function CountUp({
   useEffect(() => {
     const unsubscribe = springValue.on("change", (latest) => {
       if (ref.current) {
-        const options = {
-          useGrouping: !!separator,
-          minimumFractionDigits: 0,
-          maximumFractionDigits: 0,
-        };
+        try {
+          const options = {
+            useGrouping: !!separator,
+            minimumFractionDigits: 0,
+            maximumFractionDigits: 0,
+          };
 
-        const formattedNumber = Intl.NumberFormat("en-US", options).format(
-          Number(latest.toFixed(0))
-        );
+          const formattedNumber = Intl.NumberFormat("en-US", options).format(
+            Number(latest.toFixed(0))
+          );
 
-        ref.current.textContent = separator
-          ? formattedNumber.replace(/,/g, separator)
-          : formattedNumber;
+          ref.current.textContent = separator
+            ? formattedNumber.replace(/,/g, separator)
+            : formattedNumber;
+        } catch {
+          // Fallback for formatting errors
+          ref.current.textContent = Math.round(latest).toString();
+        }
       }
     });
 
     return () => unsubscribe();
   }, [springValue, separator]);
 
-  return <span className={`${className}`} ref={ref} />;
+  return (
+    <span 
+      className={`${className} gpu-accelerated`} 
+      ref={ref}
+      style={{ willChange: 'contents' }}
+    />
+  );
 }

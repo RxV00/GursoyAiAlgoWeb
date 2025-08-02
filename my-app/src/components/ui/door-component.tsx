@@ -1,6 +1,6 @@
 "use client"
 
-import { motion } from "framer-motion"
+import { LazyMotion, domMax, m } from "framer-motion"
 import type { ReactNode } from "react"
 
 interface DoorComponentProps {
@@ -17,12 +17,13 @@ export function DoorComponent({
   doorHeight = "h-64",
 }: DoorComponentProps) {
   return (
-    <div className={`relative ${doorHeight} w-full overflow-hidden rounded-3xl shadow-2xl border border-slate-200/20`}>
-      {/* Content behind the doors */}
-      <div className="absolute inset-0 flex items-center justify-center">{contentBehind}</div>
+    <LazyMotion features={domMax}>
+      <div className={`relative ${doorHeight} w-full overflow-hidden rounded-3xl shadow-2xl border border-slate-200/20`}>
+        {/* Content behind the doors */}
+        <div className="absolute inset-0 flex items-center justify-center">{contentBehind}</div>
 
-      {/* Left Door */}
-      <motion.div
+        {/* Left Door */}
+        <m.div
         className={`absolute top-0 left-0 bg-gradient-to-br ${doorColor} ${doorHeight} shadow-2xl`}
         style={{ width: "50%" }}
         initial={{ x: 0 }}
@@ -55,10 +56,10 @@ export function DoorComponent({
 
         {/* Edge highlight */}
         <div className="absolute right-0 top-0 w-1 h-full bg-gradient-to-b from-white/20 via-white/10 to-white/5"></div>
-      </motion.div>
+        </m.div>
 
-      {/* Right Door */}
-      <motion.div
+        {/* Right Door */}
+        <m.div
         className={`absolute top-0 right-0 bg-gradient-to-bl ${doorColor} ${doorHeight} shadow-2xl`}
         style={{ width: "50%" }}
         initial={{ x: 0 }}
@@ -91,10 +92,10 @@ export function DoorComponent({
 
         {/* Edge highlight */}
         <div className="absolute left-0 top-0 w-1 h-full bg-gradient-to-b from-white/20 via-white/10 to-white/5"></div>
-      </motion.div>
+        </m.div>
 
-      {/* Center seam with elegant styling */}
-      <div className="absolute inset-0 pointer-events-none">
+        {/* Center seam with elegant styling */}
+        <div className="absolute inset-0 pointer-events-none">
         <div className="absolute top-0 left-1/2 w-px h-full bg-gradient-to-b from-slate-400/30 via-slate-500/40 to-slate-400/30 transform -translate-x-1/2"></div>
 
         {/* Door frame shadow */}
@@ -104,8 +105,9 @@ export function DoorComponent({
         ></div>
       </div>
 
-      {/* Ambient lighting effect */}
-      <div className="absolute inset-0 bg-gradient-to-t from-black/5 via-transparent to-white/5 rounded-3xl pointer-events-none"></div>
-    </div>
+        {/* Ambient lighting effect */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/5 via-transparent to-white/5 rounded-3xl pointer-events-none"></div>
+      </div>
+    </LazyMotion>
   )
 }

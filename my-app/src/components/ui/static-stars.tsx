@@ -23,27 +23,47 @@ export const StaticStars: React.FC<StaticStarsProps> = ({
   className,
 }) => {
   const [stars, setStars] = useState<Star[]>([]);
+  const [isClient, setIsClient] = useState(false);
+
+  // Client-side hydration detection
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
 
   useEffect(() => {
+    if (!isClient) return;
+
     const generateStars = () => {
       const newStars: Star[] = [];
+      
+      // Use seeded random for consistent SSR/client rendering
+      let seed = 12345;
+      const seededRandom = () => {
+        seed = (seed * 9301 + 49297) % 233280;
+        return seed / 233280;
+      };
       
       for (let i = 0; i < starCount; i++) {
         newStars.push({
           id: i,
-          x: Math.random() * 100, // Use percentage for responsive design
-          y: Math.random() * 100,
-          size: Math.random() * 2 + 1, // Random size between 1-3px
-          opacity: Math.random() * 0.8 + 0.2, // Random opacity between 0.2-1
-          twinkleSpeed: Math.random() * 3 + 2, // Random speed between 2-5s
+          x: seededRandom() * 100, // Use percentage for responsive design
+          y: seededRandom() * 100,
+          size: seededRandom() * 2 + 1, // Random size between 1-3px
+          opacity: seededRandom() * 0.8 + 0.2, // Random opacity between 0.2-1
+          twinkleSpeed: seededRandom() * 3 + 2, // Random speed between 2-5s
         });
       }
       
       setStars(newStars);
     };
 
-    generateStars();
-  }, [starCount]);
+    // Debounce star generation to prevent excessive re-renders
+    const timeoutId = setTimeout(generateStars, 100);
+    
+    return () => {
+      clearTimeout(timeoutId);
+    };
+  }, [isClient, starCount]);
 
   return (
     <div className={cn("absolute inset-0 overflow-hidden", className)}>

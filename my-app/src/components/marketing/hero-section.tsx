@@ -1,15 +1,14 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { motion } from 'framer-motion'
+import { LazyMotion, domMax, m } from 'framer-motion'
 import { useInView } from 'react-intersection-observer'
 import Link from 'next/link'
 import { ArrowRight, ChevronDown } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import CountUp from '@/components/ui/CountUp'
-import { ShootingStars } from '@/components/ui/shooting-stars'
-import { StaticStars } from '@/components/ui/static-stars'
-import { WindowAnimation } from '@/components/ui/window-animation'
+import WindowAnimation from '../ui/window-animation'
+import { LazyStarAnimations } from '@/components/ui/lazy-star-animations'
 
 export function HeroSection() {
   const [showMainHero, setShowMainHero] = useState(false)
@@ -21,10 +20,11 @@ export function HeroSection() {
 
   useEffect(() => {
     if (inView) {
-      // Start the 3D animation immediately when in view
-      setTimeout(() => {
+      // Show content with proper timing for smooth animation
+      const timer = setTimeout(() => {
         setShowMainHero(true)
-      }, 1300) // Reduced delay for faster hero content appearance while keeping window animation slow
+      }, 800) // Longer delay to let animation start properly
+      return () => clearTimeout(timer)
     }
   }, [inView])
 
@@ -55,49 +55,59 @@ export function HeroSection() {
     <section
       ref={ref}
       className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-br from-white to-slate-50 pt-24 md:pt-20"
+      style={{
+        backgroundImage: `radial-gradient(circle at 50% 50%, rgba(194, 211, 225, 0.1) 0%, transparent 50%)`,
+        minHeight: '100vh'
+      }}
     >
-      {/* 3D Window Animation */}
-      <WindowAnimation>
-        {/* Static Stars Background */}
-        <StaticStars
-          starCount={150}
+              {/* Always load star animations for background */}
+        <LazyStarAnimations
+          starCount={100}
           starColor="#c6d3e1"
-          className="absolute inset-0 z-0"
+          shootingStarProps={{
+            minSpeed: 15,
+            maxSpeed: 25,
+            minDelay: 1500,
+            maxDelay: 3000,
+            starColor: "#7a8fa5",
+            trailColor: "#c6d3e1",
+            starWidth: 15,
+            starHeight: 2,
+          }}
+          className="absolute inset-0"
+          enableLazyLoading={false}
         />
         
-        {/* Shooting Stars Background */}
-        <ShootingStars
-          minSpeed={20}
-          maxSpeed={35}
-          minDelay={800}
-          maxDelay={2000}
-          starColor="#7a8fa5"
-          trailColor="#c6d3e1"
-          starWidth={20}
-          starHeight={3}
-          className="absolute inset-0 z-[1]"
-        />
+        {/* Sliding Window Animation - Display as overlay */}
+        {showMainHero && <WindowAnimation />}
 
         {/* Main Hero Content */}
-        <motion.div
-          className="relative z-10 mx-auto max-w-6xl px-6 text-center"
-          variants={heroContentVariants}
-          initial="hidden"
-          animate={showMainHero ? 'visible' : 'hidden'}
-        >
-          <div className="animate-fade-up">
-            <h1 className="mb-8 text-6xl font-light leading-tight text-slate-900 md:text-7xl">
+        <LazyMotion features={domMax}>
+          <m.div
+            className="relative z-10 mx-auto max-w-6xl px-4 md:px-6 text-center gpu-accelerated"
+            variants={heroContentVariants}
+            initial="hidden"
+            animate={showMainHero ? 'visible' : 'hidden'}
+            style={{
+              // FIXED: Always ensure content stays visible, but below navbar
+              minHeight: 'auto',
+              position: 'relative',
+              zIndex: 10
+            }}
+          >
+          <div className="animate-fade-up gpu-accelerated">
+            <h1 className="mb-6 md:mb-8 text-4xl md:text-6xl lg:text-7xl font-light leading-tight text-slate-900">
               Instant Quotes for
               <br />
               <span className="font-semibold text-[#7a8fa5]">
                 Custom Architectural Products
               </span>
             </h1>
-            <p className="mx-auto mb-12 max-w-3xl text-xl text-slate-600 leading-relaxed md:text-2xl">
+            <p className="mx-auto mb-8 md:mb-12 max-w-3xl px-4 md:px-0 text-lg md:text-xl lg:text-2xl text-slate-600 leading-relaxed">
               Get accurate price estimates for windows, doors, and skylights in seconds.
               Upload a photo or enter measurements manually.
             </p>
-            <div className="flex flex-col gap-6 sm:flex-row sm:justify-center">
+            <div className="flex flex-col gap-6 sm:flex-row sm:justify-center px-4 md:px-0">
               <Link href="#measurement">
                 <Button
                   size="lg"
@@ -120,48 +130,49 @@ export function HeroSection() {
           </div>
 
           {/* Elegant stats cards */}
-          <div className="mt-24 grid grid-cols-2 gap-8 md:grid-cols-4">
+          <div className="mt-12 md:mt-24 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-6 px-2 md:px-0">
             <div
-              className="animate-fade-up bg-white border border-slate-200 rounded-xl p-8 shadow-lg hover:shadow-elegant transition-all duration-300"
+              className="animate-fade-up bg-white border border-slate-200 rounded-xl p-3 sm:p-4 md:p-6 lg:p-8 shadow-lg hover:shadow-elegant smooth-transition"
               style={{ animationDelay: '0.1s' }}
             >
-              <div className="text-4xl font-light text-[#7a8fa5]">
-                <CountUp to={50000} separator="," className="text-4xl font-light text-[#7a8fa5]" />
+              <div className="text-lg sm:text-xl md:text-2xl lg:text-3xl xl:text-4xl font-light text-[#7a8fa5]">
+                <CountUp to={50000} separator="," className="text-lg sm:text-xl md:text-2xl lg:text-3xl xl:text-4xl font-light text-[#7a8fa5]" />
                 <span>+</span>
               </div>
-              <div className="text-sm text-slate-600 mt-2">Quotes Generated</div>
+              <div className="text-xs sm:text-sm text-slate-600 mt-1 md:mt-2">Quotes Generated</div>
             </div>
             <div
-              className="animate-fade-up bg-white border border-slate-200 rounded-xl p-8 shadow-lg hover:shadow-elegant transition-all duration-300"
+              className="animate-fade-up bg-white border border-slate-200 rounded-xl p-3 sm:p-4 md:p-6 lg:p-8 shadow-lg hover:shadow-elegant smooth-transition"
               style={{ animationDelay: '0.2s' }}
             >
-              <div className="text-4xl font-light text-[#7a8fa5]">
-                <CountUp to={98} className="text-4xl font-light text-[#7a8fa5]" />
+              <div className="text-lg sm:text-xl md:text-2xl lg:text-3xl xl:text-4xl font-light text-[#7a8fa5]">
+                <CountUp to={98} className="text-lg sm:text-xl md:text-2xl lg:text-3xl xl:text-4xl font-light text-[#7a8fa5]" />
                 <span>%</span>
               </div>
-              <div className="text-sm text-slate-600 mt-2">Accuracy Rate</div>
+              <div className="text-xs sm:text-sm text-slate-600 mt-1 md:mt-2">Accuracy Rate</div>
             </div>
             <div
-              className="animate-fade-up bg-white border border-slate-200 rounded-xl p-8 shadow-lg hover:shadow-elegant transition-all duration-300"
+              className="animate-fade-up bg-white border border-slate-200 rounded-xl p-3 sm:p-4 md:p-6 lg:p-8 shadow-lg hover:shadow-elegant smooth-transition"
               style={{ animationDelay: '0.3s' }}
             >
-              <div className="text-4xl font-light text-[#7a8fa5]">
+              <div className="text-lg sm:text-xl md:text-2xl lg:text-3xl xl:text-4xl font-light text-[#7a8fa5]">
                 <span className="text-4xl font-light text-[#7a8fa5]">24/7</span>
               </div>
-              <div className="text-sm text-slate-600 mt-2">Available</div>
+              <div className="text-xs sm:text-sm text-slate-600 mt-1 md:mt-2">Available</div>
             </div>
             <div
-              className="animate-fade-up bg-white border border-slate-200 rounded-xl p-8 shadow-lg hover:shadow-elegant transition-all duration-300"
+              className="animate-fade-up bg-white border border-slate-200 rounded-xl p-3 sm:p-4 md:p-6 lg:p-8 shadow-lg hover:shadow-elegant smooth-transition"
               style={{ animationDelay: '0.4s' }}
             >
-              <div className="text-4xl font-light text-[#7a8fa5]">
-                <CountUp to={3} className="text-4xl font-light text-[#7a8fa5]" />
+              <div className="text-lg sm:text-xl md:text-2xl lg:text-3xl xl:text-4xl font-light text-[#7a8fa5]">
+                <CountUp to={3} className="text-lg sm:text-xl md:text-2xl lg:text-3xl xl:text-4xl font-light text-[#7a8fa5]" />
                 <span>sec</span>
               </div>
-              <div className="text-sm text-slate-600 mt-2">Quote Time</div>
+              <div className="text-xs sm:text-sm text-slate-600 mt-1 md:mt-2">Quote Time</div>
             </div>
           </div>
-        </motion.div>
+          </m.div>
+        </LazyMotion>
 
         {/* Elegant scroll indicator - only shows when main hero is visible */}
         {showMainHero && (
@@ -169,7 +180,6 @@ export function HeroSection() {
             <ChevronDown className="h-8 w-8 text-[#7a8fa5] opacity-70" />
           </div>
         )}
-      </WindowAnimation>
     </section>
   )
 }

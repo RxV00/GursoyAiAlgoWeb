@@ -1,5 +1,5 @@
 'use client'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Upload, Loader2 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { Measurements } from '@/lib/pricing'
@@ -24,6 +24,10 @@ export function PhotoUpload({ onMeasurementsExtracted, productType }: PhotoUploa
     reader.onloadend = () => {
       setUploadedImage(reader.result as string)
     }
+    reader.onerror = () => {
+      setIsUploading(false)
+      console.error('Failed to read file')
+    }
     reader.readAsDataURL(file)
 
     // Simulate AI processing
@@ -37,6 +41,13 @@ export function PhotoUpload({ onMeasurementsExtracted, productType }: PhotoUploa
       setIsUploading(false)
     }, 2000)
   }
+
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      setIsUploading(false)
+    }
+  }, [])
 
   return (
     <div className="space-y-4">

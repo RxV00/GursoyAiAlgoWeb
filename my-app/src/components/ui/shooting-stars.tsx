@@ -53,10 +53,23 @@ export const ShootingStars: React.FC<ShootingStarsProps> = ({
   className,
 }) => {
   const [star, setStar] = useState<ShootingStar | null>(null);
+  const [isClient, setIsClient] = useState(false);
   const svgRef = useRef<SVGSVGElement>(null);
 
+  // Client-side hydration detection
   useEffect(() => {
+    setIsClient(true);
+  }, []);
+
+  useEffect(() => {
+    if (!isClient) return;
+
+    let timeoutId: NodeJS.Timeout;
+    let isMounted = true;
+
     const createStar = () => {
+      if (!isMounted) return;
+      
       const { x, y, angle } = getRandomStartPoint();
       const newStar: ShootingStar = {
         id: Date.now(),
@@ -70,19 +83,30 @@ export const ShootingStars: React.FC<ShootingStarsProps> = ({
       setStar(newStar);
 
       const randomDelay = Math.random() * (maxDelay - minDelay) + minDelay;
-      setTimeout(createStar, randomDelay);
+      timeoutId = setTimeout(createStar, randomDelay);
     };
 
     createStar();
 
-    return () => {};
-  }, [minSpeed, maxSpeed, minDelay, maxDelay]);
+    return () => {
+      isMounted = false;
+      if (timeoutId) {
+        clearTimeout(timeoutId);
+      }
+    };
+  }, [isClient, minSpeed, maxSpeed, minDelay, maxDelay]);
 
   useEffect(() => {
+    let animationFrame: number;
+
     const moveStar = () => {
       if (star) {
         setStar((prevStar) => {
           if (!prevStar) return null;
+          
+          // Check if window is available (SSR safety)
+          if (typeof window === 'undefined') return null;
+          
           const newX =
             prevStar.x +
             prevStar.speed * Math.cos((prevStar.angle * Math.PI) / 180);
@@ -91,6 +115,7 @@ export const ShootingStars: React.FC<ShootingStarsProps> = ({
             prevStar.speed * Math.sin((prevStar.angle * Math.PI) / 180);
           const newDistance = prevStar.distance + prevStar.speed;
           const newScale = 1 + newDistance / 100;
+          
           if (
             newX < -20 ||
             newX > window.innerWidth + 20 ||
@@ -108,10 +133,19 @@ export const ShootingStars: React.FC<ShootingStarsProps> = ({
           };
         });
       }
+      // Continue animation loop
+      animationFrame = requestAnimationFrame(moveStar);
     };
 
-    const animationFrame = requestAnimationFrame(moveStar);
-    return () => cancelAnimationFrame(animationFrame);
+    if (star) {
+      animationFrame = requestAnimationFrame(moveStar);
+    }
+
+    return () => {
+      if (animationFrame) {
+        cancelAnimationFrame(animationFrame);
+      }
+    };
   }, [star]);
 
   return (

@@ -3,7 +3,8 @@
 import { useState, useEffect } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { ChevronDown, Check, Star, Eye } from 'lucide-react'
-import { motion } from 'framer-motion'
+import { LazyMotion, domMax, m } from 'framer-motion'
+import { LazyMotionDiv } from '@/components/ui/lazy-framer-motion'
 import { useInView } from 'react-intersection-observer'
 import * as Accordion from '@radix-ui/react-accordion'
 import { DoorComponent } from '@/components/ui/door-component'
@@ -83,15 +84,22 @@ export function ProductsSection() {
   useEffect(() => {
     if (inView) {
       const productIds = ['window', 'door', 'skylight']
+      const timeouts: NodeJS.Timeout[] = []
       
       productIds.forEach((productId, index) => {
-        setTimeout(() => {
+        const timeoutId = setTimeout(() => {
           setOpenDoors(prev => ({
             ...prev,
             [productId]: true
           }))
         }, (index + 1) * 800) // 800ms delay between each door opening
+        timeouts.push(timeoutId)
       })
+
+      // Cleanup timeouts on unmount
+      return () => {
+        timeouts.forEach(clearTimeout)
+      }
     }
   }, [inView])
 
@@ -115,7 +123,7 @@ export function ProductsSection() {
         </div>
         <div className="grid gap-8 md:grid-cols-3">
           {products.map((p, index) => (
-            <motion.div
+            <LazyMotionDiv
               key={p.id}
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -156,46 +164,51 @@ export function ProductsSection() {
                         </div>
                       }
                     />
-                    <motion.button
-                      onClick={() => toggleDoor(p.id)}
-                      className="mt-4 flex items-center justify-center space-x-2 text-[#7a8fa5] hover:text-[#5d7489] transition-colors"
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
-                    >
-                      <Eye className="h-4 w-4" />
-                      <span className="text-sm font-medium">
-                        {openDoors[p.id] ? 'Hide Features' : 'Reveal Features'}
-                      </span>
-                    </motion.button>
+                    <LazyMotion features={domMax}>
+                      <m.button
+                        onClick={() => toggleDoor(p.id)}
+                        className="mt-4 flex items-center justify-center space-x-2 text-[#7a8fa5] hover:text-[#5d7489] transition-colors"
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                      >
+                        <Eye className="h-4 w-4" />
+                        <span className="text-sm font-medium">
+                          {openDoors[p.id] ? 'Hide Features' : 'Reveal Features'}
+                        </span>
+                      </m.button>
+                    </LazyMotion>
                   </div>
 
                   <Accordion.Root type="single" collapsible className="w-full">
                     <Accordion.Item value="specifications">
                       <Accordion.Trigger className="group flex items-center justify-between w-full px-4 py-3 text-left text-sm font-medium text-slate-700 bg-slate-50 hover:bg-slate-100 rounded-lg transition-colors mb-2">
                         <span>Technical Specifications</span>
-                        <motion.div
-                          className="text-slate-500"
-                          animate={{ rotate: 0 }}
-                          whileHover={{ rotate: 180 }}
-                          transition={{ duration: 0.2 }}
-                        >
-                          <ChevronDown className="h-4 w-4" />
-                        </motion.div>
+                        <LazyMotion features={domMax}>
+                          <m.div
+                            className="text-slate-500"
+                            animate={{ rotate: 0 }}
+                            whileHover={{ rotate: 180 }}
+                            transition={{ duration: 0.2 }}
+                          >
+                            <ChevronDown className="h-4 w-4" />
+                          </m.div>
+                        </LazyMotion>
                       </Accordion.Trigger>
                       <Accordion.Content className="overflow-hidden data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down">
                         <div className="pt-2 pb-4">
                           <ul className="space-y-2 text-sm text-slate-600">
                             {p.specifications.map((spec, specIndex) => (
-                              <motion.li
-                                key={specIndex}
-                                initial={{ opacity: 0, x: -20 }}
-                                animate={{ opacity: 1, x: 0 }}
-                                transition={{ duration: 0.3, delay: specIndex * 0.1 }}
-                                className="flex items-start space-x-2"
-                              >
-                                <Check className="h-4 w-4 text-green-500 mt-0.5 flex-shrink-0" />
-                                <span>{spec}</span>
-                              </motion.li>
+                              <LazyMotion features={domMax} key={specIndex}>
+                                <m.li
+                                  initial={{ opacity: 0, x: -20 }}
+                                  animate={{ opacity: 1, x: 0 }}
+                                  transition={{ duration: 0.3, delay: specIndex * 0.1 }}
+                                  className="flex items-start space-x-2"
+                                >
+                                  <Check className="h-4 w-4 text-green-500 mt-0.5 flex-shrink-0" />
+                                  <span>{spec}</span>
+                                </m.li>
+                              </LazyMotion>
                             ))}
                           </ul>
                         </div>
@@ -205,29 +218,32 @@ export function ProductsSection() {
                     <Accordion.Item value="features">
                       <Accordion.Trigger className="group flex items-center justify-between w-full px-4 py-3 text-left text-sm font-medium text-slate-700 bg-slate-50 hover:bg-slate-100 rounded-lg transition-colors">
                         <span>All Features</span>
-                        <motion.div
-                          className="text-slate-500"
-                          animate={{ rotate: 0 }}
-                          whileHover={{ rotate: 180 }}
-                          transition={{ duration: 0.2 }}
-                        >
-                          <ChevronDown className="h-4 w-4" />
-                        </motion.div>
+                        <LazyMotion features={domMax}>
+                          <m.div
+                            className="text-slate-500"
+                            animate={{ rotate: 0 }}
+                            whileHover={{ rotate: 180 }}
+                            transition={{ duration: 0.2 }}
+                          >
+                            <ChevronDown className="h-4 w-4" />
+                          </m.div>
+                        </LazyMotion>
                       </Accordion.Trigger>
                       <Accordion.Content className="overflow-hidden data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down">
                         <div className="pt-2 pb-4">
                           <ul className="space-y-2 text-sm text-slate-600">
                             {p.features.map((feature, featureIndex) => (
-                              <motion.li
-                                key={featureIndex}
-                                initial={{ opacity: 0, x: -20 }}
-                                animate={{ opacity: 1, x: 0 }}
-                                transition={{ duration: 0.3, delay: featureIndex * 0.1 }}
-                                className="flex items-start space-x-2"
-                              >
-                                <Star className="h-4 w-4 text-[#7a8fa5] mt-0.5 flex-shrink-0" />
-                                <span>{feature}</span>
-                              </motion.li>
+                              <LazyMotion features={domMax} key={featureIndex}>
+                                <m.li
+                                  initial={{ opacity: 0, x: -20 }}
+                                  animate={{ opacity: 1, x: 0 }}
+                                  transition={{ duration: 0.3, delay: featureIndex * 0.1 }}
+                                  className="flex items-start space-x-2"
+                                >
+                                  <Star className="h-4 w-4 text-[#7a8fa5] mt-0.5 flex-shrink-0" />
+                                  <span>{feature}</span>
+                                </m.li>
+                              </LazyMotion>
                             ))}
                           </ul>
                         </div>
@@ -236,7 +252,7 @@ export function ProductsSection() {
                   </Accordion.Root>
                 </CardContent>
               </Card>
-            </motion.div>
+            </LazyMotionDiv>
           ))}
         </div>
       </div>

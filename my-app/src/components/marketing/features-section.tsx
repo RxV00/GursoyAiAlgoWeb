@@ -1,6 +1,7 @@
 'use client'
 import { ShieldCheck, Camera, Clock, ChevronDown } from 'lucide-react'
-import { motion } from 'framer-motion'
+import { LazyMotion, domMax, m } from 'framer-motion'
+import { LazyMotionDiv } from '@/components/ui/lazy-framer-motion'
 import * as Accordion from '@radix-ui/react-accordion'
 
 export function FeaturesSection() {
@@ -54,12 +55,19 @@ professionals
         </div>
         <div className="grid gap-8 md:grid-cols-3">
           {features.map((f, i) => (
-            <motion.div
+            <LazyMotionDiv
               key={i}
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: i * 0.2 }}
-              viewport={{ once: true }}
+              transition={{ 
+                duration: 0.5, 
+                delay: i * 0.15,
+                ease: [0.4, 0, 0.2, 1]
+              }}
+              viewport={{ 
+                once: true, 
+                margin: "0px 0px -100px 0px"
+              }}
               className="bg-white rounded-2xl shadow-lg border border-slate-200 overflow-hidden"
             >
               <div className="p-8 text-center">
@@ -76,30 +84,37 @@ professionals
                     <Accordion.Trigger className="group flex items-center justify-between w-full px-4 py-3
 text-left text-sm font-medium text-slate-700 bg-slate-50 hover:bg-slate-100 rounded-lg transition-colors">
                       <span>Learn More</span>
-                      <motion.div
-                        className="text-slate-500"
-                        animate={{ rotate: 0 }}
-                        whileHover={{ rotate: 180 }}
-                        transition={{ duration: 0.2 }}
-                      >
-                        <ChevronDown className="h-4 w-4" />
-                      </motion.div>
+                      <LazyMotion features={domMax}>
+                        <m.div
+                          className="text-slate-500"
+                          animate={{ rotate: 0 }}
+                          whileHover={{ rotate: 180 }}
+                          transition={{ duration: 0.2 }}
+                        >
+                          <ChevronDown className="h-4 w-4" />
+                        </m.div>
+                      </LazyMotion>
                     </Accordion.Trigger>
                     <Accordion.Content className="overflow-hidden data-[state=closed]:animate-accordion-up
 data-[state=open]:animate-accordion-down">
                       <div className="pt-4">
                         <ul className="space-y-2 text-sm text-slate-600">
                           {f.details.map((detail, index) => (
-                            <motion.li
-                              key={index}
-                              initial={{ opacity: 0, x: -20 }}
-                              animate={{ opacity: 1, x: 0 }}
-                              transition={{ duration: 0.3, delay: index * 0.1 }}
-                              className="flex items-start space-x-2"
-                            >
-                              <span className="text-[#7a8fa5] mt-1">•</span>
-                              <span>{detail}</span>
-                            </motion.li>
+                            <LazyMotion features={domMax} key={index}>
+                              <m.li
+                                initial={{ opacity: 0, x: -10 }}
+                                animate={{ opacity: 1, x: 0 }}
+                                transition={{ 
+                                  duration: 0.25, 
+                                  delay: index * 0.05,
+                                  ease: "easeOut"
+                                }}
+                                className="flex items-start space-x-2 gpu-accelerated"
+                              >
+                                <span className="text-[#7a8fa5] mt-1">•</span>
+                                <span>{detail}</span>
+                              </m.li>
+                            </LazyMotion>
                           ))}
                         </ul>
                       </div>
@@ -107,7 +122,7 @@ data-[state=open]:animate-accordion-down">
                   </Accordion.Item>
                 </Accordion.Root>
               </div>
-            </motion.div>
+            </LazyMotionDiv>
           ))}
         </div>
       </div>
