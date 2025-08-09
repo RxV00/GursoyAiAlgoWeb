@@ -60,7 +60,7 @@ export function Header() {
             Sign In
           </NavbarButton>
           <NavbarButton 
-            href="/register"
+            href="/signup"
             variant="primary" 
             className="bg-[#c6d3e1] hover:bg-[#a8bcd2] text-[#2d3e50] shadow-lg border-none"
           >
@@ -113,7 +113,7 @@ export function Header() {
               Sign In
             </Link>
             <Link
-              href="/register"
+              href="/signup"
               className="block rounded-lg px-3 py-3 text-base font-medium text-slate-600 hover:bg-[#f0f4f8] hover:text-[#7a8fa5] transition-colors"
               onClick={handleMobileMenuClose}
             >
