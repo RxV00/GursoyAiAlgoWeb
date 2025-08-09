@@ -13,5 +13,6 @@ export const config = {
      */
     '/dashboard/:path*',
     '/api/:path*',
+    '/verify',
   ],
 }

@@ -2,6 +2,7 @@
 
 import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
+import { cookies } from 'next/headers'
 import { createClient } from '@/lib/supabase/server'
 import { z } from 'zod'
 
@@ -20,6 +21,10 @@ const signupSchema = z
     firstName: z.string().min(1, 'First name is required'),
     lastName: z.string().min(1, 'Last name is required'),
     email: z.string().email('Please enter a valid email'),
+    phone: z
+      .string()
+      .min(8, 'Phone number is required')
+      .regex(/^[0-9+()\-\s]{8,}$/i, 'Enter a valid phone number'),
     password: z.string().min(8, 'Password must be at least 8 characters'),
     confirmPassword: z.string().min(8, 'Confirm your password'),
     company: z.string().optional().or(z.literal('')),
@@ -63,6 +68,7 @@ export async function signup(_prevState: AuthActionState | null, formData: FormD
     firstName: String(formData.get('firstName') ?? ''),
     lastName: String(formData.get('lastName') ?? ''),
     email: String(formData.get('email') ?? ''),
+    phone: String(formData.get('phone') ?? ''),
     password: String(formData.get('password') ?? ''),
     confirmPassword: String(formData.get('confirmPassword') ?? ''),
     company: String(formData.get('company') ?? ''),
@@ -76,30 +82,52 @@ export async function signup(_prevState: AuthActionState | null, formData: FormD
     return { ok: false, error: firstError }
   }
 
-  const supabase = await createClient()
+  // We will defer account creation until the user chooses a verification method
 
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'
+  // Normalize Turkish phone numbers to E.164 (+90XXXXXXXXXX) and keep a display version
+  const digitsOnly = parsed.data.phone.replace(/\D/g, '')
+  let national = digitsOnly
+  if (national.startsWith('0')) national = national.slice(1)
+  if (national.startsWith('90')) national = national.slice(2)
+  const phoneE164 = national.length === 10 ? `+90${national}` : `+${digitsOnly}`
+  const phoneDisplay = parsed.data.phone
 
-  const { error } = await supabase.auth.signUp({
+  // Stash pending signup payload in an httpOnly cookie (short-lived)
+  const cookieStore = await cookies()
+  cookieStore.set('onboard_pending', '1', {
+    httpOnly: true,
+    sameSite: 'lax',
+    path: '/',
+    maxAge: 60 * 15, // 15 minutes
+  })
+  cookieStore.set('pending_signup', JSON.stringify({
+    firstName: parsed.data.firstName,
+    lastName: parsed.data.lastName,
     email: parsed.data.email,
     password: parsed.data.password,
-    options: {
-      emailRedirectTo: `${siteUrl}/auth/confirm?next=/dashboard`,
-      data: {
-        first_name: parsed.data.firstName,
-        last_name: parsed.data.lastName,
-        company: parsed.data.company,
-        role: parsed.data.role,
-        newsletter_subscription: parsed.data.newsletter ? true : false,
-      },
-    },
+    phone: phoneDisplay,
+    phone_e164: phoneE164,
+    company: parsed.data.company,
+    role: parsed.data.role,
+    newsletter: !!parsed.data.newsletter,
+  }), {
+    httpOnly: true,
+    sameSite: 'lax',
+    path: '/',
+    maxAge: 60 * 15,
   })
-
-  if (error) {
-    return { ok: false, error: error.message }
-  }
-
-  // On successful sign up, let Supabase send confirmation email and land user on confirm flow
-  // Keep user on the same page and show success info, or navigate to login.
-  return { ok: true }
+  const token = Math.random().toString(36).slice(2) + Date.now().toString(36)
+  cookieStore.set('verify_token', token, {
+    httpOnly: true,
+    sameSite: 'lax',
+    path: '/',
+    maxAge: 60 * 30, // 30 minutes window
+  })
+  cookieStore.set('verify_issued_at', String(Date.now()), {
+    httpOnly: true,
+    sameSite: 'lax',
+    path: '/',
+    maxAge: 60 * 30,
+  })
+  redirect('/verify')
 }

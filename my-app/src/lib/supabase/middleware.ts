@@ -37,15 +37,44 @@ export async function updateSession(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser()
 
-  // Only protect dashboard routes - let public pages be accessible
-  if (
-    !user &&
-    request.nextUrl.pathname.startsWith('/dashboard')
-  ) {
-    // no user, redirect to login page for protected routes
-    const url = request.nextUrl.clone()
-    url.pathname = '/login'
-    return NextResponse.redirect(url)
+  // Protect sensitive routes; public pages remain accessible
+  // Gatekeeping rules
+  const isVerify = request.nextUrl.pathname.startsWith('/verify')
+  // Phone verification routes removed
+  const isDashboard = request.nextUrl.pathname.startsWith('/dashboard')
+
+  // Unauthenticated users:
+  // - dashboard -> login
+  // - verify/phone -> require pending + token else redirect signup
+  if (!user) {
+    if (isDashboard) {
+      const url = request.nextUrl.clone()
+      url.pathname = '/login'
+      return NextResponse.redirect(url)
+    }
+    if (isVerify) {
+      const hasPending = !!request.cookies.get('pending_signup')?.value
+      const verifyToken = request.cookies.get('verify_token')?.value
+      const issuedAtStr = request.cookies.get('verify_issued_at')?.value
+      const issuedAt = issuedAtStr ? Number(issuedAtStr) : 0
+      const isFresh = issuedAt > 0 && Date.now() - issuedAt < 1000 * 60 * 30
+      if (!hasPending || !verifyToken || !isFresh) {
+        const url = request.nextUrl.clone()
+        url.pathname = '/signup'
+        return NextResponse.redirect(url)
+      }
+    }
+  }
+
+  // Additional gate: allow /verify only if user just finished signup (cookie flag)
+  // If authenticated already, allow verify only during onboarding (token present). Otherwise send to dashboard.
+  if (user && isVerify) {
+    const verifyToken = request.cookies.get('verify_token')?.value
+    if (!verifyToken) {
+      const url = request.nextUrl.clone()
+      url.pathname = '/dashboard'
+      return NextResponse.redirect(url)
+    }
   }
 
   // IMPORTANT: You *must* return the supabaseResponse object as it is.

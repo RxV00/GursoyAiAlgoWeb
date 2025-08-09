@@ -20,6 +20,26 @@ export default function SignupPage() {
   const [role, setRole] = useState<string>("")
   const [agreeToTerms, setAgreeToTerms] = useState<boolean>(false)
   const [newsletter, setNewsletter] = useState<boolean>(false)
+  const [phone, setPhone] = useState<string>("")
+
+  function formatTrPhone(input: string): string {
+    let digits = input.replace(/\D/g, "")
+    if (digits.startsWith("0")) digits = digits.slice(1)
+    if (digits.startsWith("90")) digits = digits.slice(2)
+    digits = digits.slice(0, 10)
+    const parts = [
+      digits.slice(0, 3),
+      digits.slice(3, 6),
+      digits.slice(6, 8),
+      digits.slice(8, 10),
+    ].filter(Boolean)
+    return parts.join(" ")
+  }
+
+  function handlePhoneChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const next = formatTrPhone(e.target.value)
+    setPhone(next)
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-white to-slate-50 relative overflow-hidden">
@@ -103,6 +123,22 @@ export default function SignupPage() {
                     type="email" 
                     placeholder="john@example.com" 
                     className="w-full border-slate-300 focus:border-[#c6d3e1] focus:ring-[#c6d3e1]" 
+                    required 
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="phone" className="text-sm font-medium text-slate-700">
+                    Phone Number
+                  </Label>
+                  <Input 
+                    id="phone" 
+                    name="phone"
+                    type="tel" 
+                    placeholder="e.g. 552 255 54 43" 
+                    className="w-full border-slate-300 focus:border-[#c6d3e1] focus:ring-[#c6d3e1]" 
+                    value={phone}
+                    onChange={handlePhoneChange}
                     required 
                   />
                 </div>
