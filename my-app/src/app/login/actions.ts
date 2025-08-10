@@ -82,7 +82,8 @@ export async function signup(_prevState: AuthActionState | null, formData: FormD
     return { ok: false, error: firstError }
   }
 
-  // We will defer account creation until the user chooses a verification method
+  const supabase = await createClient()
+  const cookieStore = await cookies()
 
   // Normalize Turkish phone numbers to E.164 (+90XXXXXXXXXX) and keep a display version
   const digitsOnly = parsed.data.phone.replace(/\D/g, '')
@@ -92,42 +93,66 @@ export async function signup(_prevState: AuthActionState | null, formData: FormD
   const phoneE164 = national.length === 10 ? `+90${national}` : `+${digitsOnly}`
   const phoneDisplay = parsed.data.phone
 
-  // Stash pending signup payload in an httpOnly cookie (short-lived)
-  const cookieStore = await cookies()
-  cookieStore.set('onboard_pending', '1', {
-    httpOnly: true,
-    sameSite: 'lax',
-    path: '/',
-    maxAge: 60 * 15, // 15 minutes
-  })
-  cookieStore.set('pending_signup', JSON.stringify({
-    firstName: parsed.data.firstName,
-    lastName: parsed.data.lastName,
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'
+
+  // Create the account immediately via signUp and send verification email
+  const { data, error } = await supabase.auth.signUp({
     email: parsed.data.email,
     password: parsed.data.password,
-    phone: phoneDisplay,
-    phone_e164: phoneE164,
-    company: parsed.data.company,
-    role: parsed.data.role,
-    newsletter: !!parsed.data.newsletter,
-  }), {
+    options: {
+      emailRedirectTo: `${siteUrl}/auth/confirm?next=/dashboard`,
+      data: {
+        firstName: parsed.data.firstName,
+        lastName: parsed.data.lastName,
+        phone: phoneDisplay,
+        phone_e164: phoneE164,
+        company: parsed.data.company,
+        role: parsed.data.role,
+        newsletter: !!parsed.data.newsletter,
+      },
+    },
+  })
+
+  if (error) {
+    return { ok: false, error: error.message }
+  }
+
+  // If signup succeeded but no email was sent automatically, send it explicitly
+  if (data?.user && !data?.user?.email_confirmed_at) {
+    const { error: resendError } = await supabase.auth.resend({
+      type: 'signup',
+      email: parsed.data.email,
+      options: {
+        emailRedirectTo: `${siteUrl}/auth/confirm?next=/dashboard`,
+      },
+    })
+    
+    // Don't fail the whole signup if resend fails, just log it
+    if (resendError) {
+      console.warn('Failed to resend verification email:', resendError.message)
+    }
+  }
+
+  // Store signup session info to track auto-resend in /verify
+  const sessionId = Math.random().toString(36).slice(2) + Date.now().toString(36)
+  cookieStore.set('signup_session', sessionId, {
     httpOnly: true,
     sameSite: 'lax',
     path: '/',
-    maxAge: 60 * 15,
+    maxAge: 60 * 30, // 30 minutes
   })
-  const token = Math.random().toString(36).slice(2) + Date.now().toString(36)
-  cookieStore.set('verify_token', token, {
-    httpOnly: true,
-    sameSite: 'lax',
-    path: '/',
-    maxAge: 60 * 30, // 30 minutes window
-  })
-  cookieStore.set('verify_issued_at', String(Date.now()), {
+  cookieStore.set('signup_email', parsed.data.email, {
     httpOnly: true,
     sameSite: 'lax',
     path: '/',
     maxAge: 60 * 30,
   })
-  redirect('/verify')
+  cookieStore.set('signup_timestamp', String(Date.now()), {
+    httpOnly: true,
+    sameSite: 'lax',
+    path: '/',
+    maxAge: 60 * 30,
+  })
+
+  redirect('/waiting')
 }
