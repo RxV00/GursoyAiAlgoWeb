@@ -1,22 +1,17 @@
 import WaitingClient from './WaitingClient'
-import { cookies } from 'next/headers'
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
+import { getPendingSignup } from '@/lib/auth/session'
+import { getSecureSessionCookie } from '@/lib/auth/cookies'
 
 export default async function WaitingPage() {
-  const cookieStore = await cookies()
   const supabase = await createClient()
   
-  // Check for signup session
-  const signupSession = cookieStore.get('signup_session')?.value
-  const signupEmail = cookieStore.get('signup_email')?.value
-  const signupTimestamp = cookieStore.get('signup_timestamp')?.value
+  // Check for secure signup session
+  const signupSessionId = await getSecureSessionCookie('signup-session')
+  const pendingSignup = signupSessionId ? await getPendingSignup(signupSessionId) : null
   
-  // Check if this is a fresh signup (within last 30 minutes)
-  const isFreshSignup = signupTimestamp && 
-    (Date.now() - Number(signupTimestamp)) < (30 * 60 * 1000)
-  
-  if (!signupSession || !signupEmail || !isFreshSignup) {
+  if (!pendingSignup || pendingSignup.used) {
     // No valid signup session, redirect to signup
     redirect('/signup')
   }
@@ -24,8 +19,8 @@ export default async function WaitingPage() {
   // Check if user was confirmed AFTER this signup attempt
   try {
     const { data: { user } } = await supabase.auth.getUser()
-    if (user && user.email === signupEmail && user.email_confirmed_at) {
-      const signupTime = Number(signupTimestamp)
+    if (user && user.email === pendingSignup.email && user.email_confirmed_at) {
+      const signupTime = pendingSignup.createdAt.getTime()
       const confirmTime = new Date(user.email_confirmed_at).getTime()
       
       // Only redirect if confirmed after this signup attempt
@@ -38,5 +33,5 @@ export default async function WaitingPage() {
     console.warn('Could not check auth status:', error)
   }
 
-  return <WaitingClient email={signupEmail} signupTimestamp={Number(signupTimestamp)} />
+  return <WaitingClient email={pendingSignup.email} signupTimestamp={pendingSignup.createdAt.getTime()} />
 }
