@@ -8,11 +8,12 @@ export async function middleware(request: NextRequest) {
 export const config = {
   matcher: [
     /*
-     * Only run middleware on dashboard routes and auth routes
-     * Public pages (/, /login, /signup) don't need middleware
+     * Run middleware on dashboard routes, auth routes, and login/signup for redirect guard
      */
     '/dashboard/:path*',
     '/api/:path*',
     '/verify',
+    '/login',
+    '/signup',
   ],
 }

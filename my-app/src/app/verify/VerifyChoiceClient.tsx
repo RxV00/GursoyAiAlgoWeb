@@ -1,7 +1,9 @@
 'use client'
 
 import Link from 'next/link'
-import { useActionState } from 'react'
+import { useActionState, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
+import { createClient } from '@/lib/supabase/client'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { resendEmailVerification, type ResendState } from './actions'
@@ -10,6 +12,29 @@ type Props = { email: string }
 
 export default function VerifyChoiceClient({ email }: Props) {
   const [resendState, resendAction, isResending] = useActionState<ResendState, FormData>(resendEmailVerification, { ok: false })
+  const router = useRouter()
+  const supabase = createClient()
+
+  useEffect(() => {
+    // Listen for auth state changes to detect when email is confirmed
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+      if (event === 'SIGNED_IN' && session?.user?.email_confirmed_at) {
+        // Email confirmed, redirect to dashboard
+        router.push('/dashboard')
+      }
+    })
+
+    // Also check current session on mount
+    const checkSession = async () => {
+      const { data: { session } } = await supabase.auth.getSession()
+      if (session?.user?.email_confirmed_at) {
+        router.push('/dashboard')
+      }
+    }
+    checkSession()
+
+    return () => subscription.unsubscribe()
+  }, [supabase, router])
 
   return (
     <div className="min-h-[70vh] flex items-center justify-center px-4 py-16">

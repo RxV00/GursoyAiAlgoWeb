@@ -49,6 +49,8 @@ export async function updateSession(request: NextRequest) {
   const isVerify = request.nextUrl.pathname.startsWith('/verify')
   // Phone verification routes removed
   const isDashboard = request.nextUrl.pathname.startsWith('/dashboard')
+  const isLogin = request.nextUrl.pathname === '/login'
+  const isSignup = request.nextUrl.pathname === '/signup'
 
   // Unauthenticated users:
   // - dashboard -> login
@@ -69,6 +71,15 @@ export async function updateSession(request: NextRequest) {
       }
       // Note: Full server-side validation would require async lookup here
     }
+  }
+
+  // Redirect authenticated users away from login/signup pages
+  if (user && (isLogin || isSignup)) {
+    const url = request.nextUrl.clone()
+    url.pathname = '/dashboard'
+    const response = NextResponse.redirect(url)
+    response.headers.set('Cache-Control', 'no-store')
+    return response
   }
 
   // Additional gate: allow /verify only if user just finished signup (session present)
