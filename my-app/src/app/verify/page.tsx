@@ -1,46 +1,26 @@
-'use server'
-
 import VerifyChoiceClient from './VerifyChoiceClient'
-import { cookies } from 'next/headers'
 import { autoResendVerification } from './actions'
+import { getPendingSignup } from '@/lib/auth/session'
+import { getSecureSessionCookie } from '@/lib/auth/cookies'
 
 export default async function VerifyChoicePage() {
-  const cookieStore = await cookies()
-  
   // Check for new signup session
-  const signupSession = cookieStore.get('signup_session')?.value
-  const signupEmail = cookieStore.get('signup_email')?.value
-  const signupTimestamp = cookieStore.get('signup_timestamp')?.value
+  const signupSessionId = await getSecureSessionCookie('signup-session')
+  const pendingSignup = signupSessionId ? await getPendingSignup(signupSessionId) : null
   
-  // Check if this is a fresh signup (within last 30 minutes)
-  const isFreshSignup = signupTimestamp && 
-    (Date.now() - Number(signupTimestamp)) < (30 * 60 * 1000)
-  
-  if (!signupSession || !signupEmail || !isFreshSignup) {
-    // Fall back to old pending signup logic for backward compatibility
-    const pendingRaw = cookieStore.get('pending_signup')?.value
-    const issuedAtStr = cookieStore.get('verify_issued_at')?.value
-    const issuedAt = issuedAtStr ? Number(issuedAtStr) : 0
-    const isFresh = issuedAt > 0 && Date.now() - issuedAt < 1000 * 60 * 30
-    
-    if (!pendingRaw || !isFresh) {
-      return null
-    }
-    
-    const pending = pendingRaw ? JSON.parse(pendingRaw) as { email?: string } : null
-    const email = pending?.email || ''
-    return <VerifyChoiceClient email={email} />
+  if (!pendingSignup || pendingSignup.used) {
+    return null
   }
 
   // Auto-resend verification email once for fresh signups
-  const autoResendKey = `auto_resend_${signupSession}`
-  const hasAutoResent = cookieStore.get(autoResendKey)?.value
+  const autoResendKey = `auto-resend-${signupSessionId?.slice(-8)}`
+  const hasAutoResent = await getSecureSessionCookie(autoResendKey)
   
   if (!hasAutoResent) {
     // Perform auto-resend server-side
-    await autoResendVerification(signupEmail, signupSession)
+    await autoResendVerification(pendingSignup.email, signupSessionId!)
   }
 
-  return <VerifyChoiceClient email={signupEmail} />
+  return <VerifyChoiceClient email={pendingSignup.email} />
 }
 

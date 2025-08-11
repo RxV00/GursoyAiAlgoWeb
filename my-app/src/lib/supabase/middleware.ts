@@ -1,6 +1,9 @@
 import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
 
+// Only apply secure overrides to our custom cookies, not Supabase auth cookies
+const isSupabaseCookie = (name: string) => name.startsWith('sb-') || name.includes('auth-token')
+
 export async function updateSession(request: NextRequest) {
   let supabaseResponse = NextResponse.next({
     request,
@@ -19,9 +22,13 @@ export async function updateSession(request: NextRequest) {
           supabaseResponse = NextResponse.next({
             request,
           })
-          cookiesToSet.forEach(({ name, value, options }) =>
-            supabaseResponse.cookies.set(name, value, options)
-          )
+          cookiesToSet.forEach(({ name, value, options }) => {
+            // Apply secure settings only to non-Supabase cookies
+            const finalOptions = isSupabaseCookie(name)
+              ? { ...options, secure: true, sameSite: 'lax' as const }
+              : options
+            supabaseResponse.cookies.set(name, value, finalOptions)
+          })
         },
       },
     }
@@ -53,24 +60,22 @@ export async function updateSession(request: NextRequest) {
       return NextResponse.redirect(url)
     }
     if (isVerify) {
-      const hasPending = !!request.cookies.get('pending_signup')?.value
-      const verifyToken = request.cookies.get('verify_token')?.value
-      const issuedAtStr = request.cookies.get('verify_issued_at')?.value
-      const issuedAt = issuedAtStr ? Number(issuedAtStr) : 0
-      const isFresh = issuedAt > 0 && Date.now() - issuedAt < 1000 * 60 * 30
-      if (!hasPending || !verifyToken || !isFresh) {
+      // Check for secure session cookie instead of legacy cookies
+      const signupSessionId = request.cookies.get('__Secure-signup-session')?.value
+      if (!signupSessionId) {
         const url = request.nextUrl.clone()
         url.pathname = '/signup'
         return NextResponse.redirect(url)
       }
+      // Note: Full server-side validation would require async lookup here
     }
   }
 
-  // Additional gate: allow /verify only if user just finished signup (cookie flag)
-  // If authenticated already, allow verify only during onboarding (token present). Otherwise send to dashboard.
+  // Additional gate: allow /verify only if user just finished signup (session present)
+  // If authenticated already, allow verify only during onboarding. Otherwise send to dashboard.
   if (user && isVerify) {
-    const verifyToken = request.cookies.get('verify_token')?.value
-    if (!verifyToken) {
+    const signupSession = request.cookies.get('__Secure-signup-session')?.value
+    if (!signupSession) {
       const url = request.nextUrl.clone()
       url.pathname = '/dashboard'
       return NextResponse.redirect(url)

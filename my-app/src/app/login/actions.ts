@@ -2,9 +2,10 @@
 
 import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
-import { cookies } from 'next/headers'
 import { createClient } from '@/lib/supabase/server'
 import { z } from 'zod'
+import { createPendingSignup } from '@/lib/auth/session'
+import { setSecureSessionCookie } from '@/lib/auth/cookies'
 
 export type AuthActionState = {
   ok: boolean
@@ -83,7 +84,6 @@ export async function signup(_prevState: AuthActionState | null, formData: FormD
   }
 
   const supabase = await createClient()
-  const cookieStore = await cookies()
 
   // Normalize Turkish phone numbers to E.164 (+90XXXXXXXXXX) and keep a display version
   const digitsOnly = parsed.data.phone.replace(/\D/g, '')
@@ -134,25 +134,19 @@ export async function signup(_prevState: AuthActionState | null, formData: FormD
   }
 
   // Store signup session info to track auto-resend in /verify
-  const sessionId = Math.random().toString(36).slice(2) + Date.now().toString(36)
-  cookieStore.set('signup_session', sessionId, {
-    httpOnly: true,
-    sameSite: 'lax',
-    path: '/',
-    maxAge: 60 * 30, // 30 minutes
+  const pendingId = await createPendingSignup({
+    email: parsed.data.email,
+    firstName: parsed.data.firstName,
+    lastName: parsed.data.lastName,
+    phone: phoneDisplay,
+    phoneE164: phoneE164,
+    company: parsed.data.company,
+    role: parsed.data.role,
+    newsletter: !!parsed.data.newsletter,
   })
-  cookieStore.set('signup_email', parsed.data.email, {
-    httpOnly: true,
-    sameSite: 'lax',
-    path: '/',
-    maxAge: 60 * 30,
-  })
-  cookieStore.set('signup_timestamp', String(Date.now()), {
-    httpOnly: true,
-    sameSite: 'lax',
-    path: '/',
-    maxAge: 60 * 30,
-  })
+
+  // Store only opaque reference
+  await setSecureSessionCookie('signup-session', pendingId, 60 * 30)
 
   redirect('/waiting')
 }
