@@ -1,14 +1,9 @@
 import { createClient } from '@/lib/supabase/server'
-import { redirect } from 'next/navigation'
 
 export default async function DashboardPage() {
   const supabase = await createClient()
   
   const { data: { user } } = await supabase.auth.getUser()
-  
-  if (!user) {
-    redirect('/login')
-  }
   
   return (
     <div className="min-h-screen bg-slate-50 py-12">
@@ -19,7 +14,7 @@ export default async function DashboardPage() {
           </h1>
           <div className="space-y-4">
             <p className="text-lg text-slate-600">
-              Hello, <span className="font-medium text-slate-900">{user.email}</span>!
+              Hello, <span className="font-medium text-slate-900">{user!.email}</span>!
             </p>
             <p className="text-slate-600">
               Your email has been successfully verified and your account is ready to use.

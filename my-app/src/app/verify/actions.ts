@@ -3,6 +3,7 @@
 import { createClient } from '@/lib/supabase/server'
 import { getPendingSignup, canResendEmail, recordEmailResend } from '@/lib/auth/session'
 import { getSecureSessionCookie, setSecureSessionCookie } from '@/lib/auth/cookies'
+import { env } from '@/lib/env'
 
 export type ResendState = { ok: boolean; error?: string }
 
@@ -23,7 +24,7 @@ export async function autoResendVerification(email: string, sessionId: string): 
     return
   }
 
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'
+  const siteUrl = env.NEXT_PUBLIC_SITE_URL
 
   // Attempt to resend verification email
   const { error } = await supabase.auth.resend({
@@ -64,7 +65,7 @@ export async function resendEmailVerification(): Promise<ResendState> {
       }
     }
 
-    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'
+    const siteUrl = env.NEXT_PUBLIC_SITE_URL
     
     const { error } = await supabase.auth.resend({
       type: 'signup',

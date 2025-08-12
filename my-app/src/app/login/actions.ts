@@ -6,6 +6,7 @@ import { createClient } from '@/lib/supabase/server'
 import { z } from 'zod'
 import { createPendingSignup } from '@/lib/auth/session'
 import { setSecureSessionCookie } from '@/lib/auth/cookies'
+import { env } from '@/lib/env'
 
 export type AuthActionState = {
   ok: boolean
@@ -93,7 +94,7 @@ export async function signup(_prevState: AuthActionState | null, formData: FormD
   const phoneE164 = national.length === 10 ? `+90${national}` : `+${digitsOnly}`
   const phoneDisplay = parsed.data.phone
 
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'
+  const siteUrl = env.NEXT_PUBLIC_SITE_URL
 
   // Create the account immediately via signUp and send verification email
   const { data, error } = await supabase.auth.signUp({

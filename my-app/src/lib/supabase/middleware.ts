@@ -1,7 +1,8 @@
 import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
+import { env } from '@/lib/env'
 
-// Only apply secure overrides to our custom cookies, not Supabase auth cookies
+// Apply secure overrides to Supabase auth cookies for enhanced security
 const isSupabaseCookie = (name: string) => name.startsWith('sb-') || name.includes('auth-token')
 
 export async function updateSession(request: NextRequest) {
@@ -10,8 +11,8 @@ export async function updateSession(request: NextRequest) {
   })
 
   const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    env.NEXT_PUBLIC_SUPABASE_URL,
+    env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
     {
       cookies: {
         getAll() {
@@ -23,7 +24,7 @@ export async function updateSession(request: NextRequest) {
             request,
           })
           cookiesToSet.forEach(({ name, value, options }) => {
-            // Apply secure settings only to non-Supabase cookies
+            // Apply secure settings to Supabase auth cookies, preserve original options for app cookies
             const finalOptions = isSupabaseCookie(name)
               ? { ...options, secure: true, sameSite: 'lax' as const }
               : options

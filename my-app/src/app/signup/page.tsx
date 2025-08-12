@@ -2,6 +2,9 @@
 
 import Link from "next/link"
 import { useActionState, useState } from "react"
+import { useForm } from "react-hook-form"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { Eye, EyeOff } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -10,17 +13,33 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Checkbox } from "@/components/ui/checkbox"
 import { LazyStarAnimations } from "@/components/ui/lazy-star-animations"
 import { signup, type AuthActionState } from '@/app/login/actions'
+import { signupSchema, type SignupFormData, getPasswordStrength } from './validation'
 
 const initialState: AuthActionState = { ok: false }
 
 export default function SignupPage() {
   const [state, formAction, isPending] = useActionState(signup, initialState)
+  const [showPassword, setShowPassword] = useState(false)
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false)
 
   const success = state?.ok && !state.error
   const [role, setRole] = useState<string>("")
   const [agreeToTerms, setAgreeToTerms] = useState<boolean>(false)
   const [newsletter, setNewsletter] = useState<boolean>(false)
   const [phone, setPhone] = useState<string>("")
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isValid },
+    watch,
+  } = useForm<SignupFormData>({
+    resolver: zodResolver(signupSchema),
+    mode: 'onChange',
+  })
+
+  const password = watch('password', '')
+  const passwordStrength = password ? getPasswordStrength(password) : null
 
   function formatTrPhone(input: string): string {
     let digits = input.replace(/\D/g, "")
@@ -120,11 +139,18 @@ export default function SignupPage() {
                   <Input 
                     id="email" 
                     name="email"
+                    {...register('email')}
                     type="email" 
                     placeholder="john@example.com" 
                     className="w-full border-slate-300 focus:border-[#c6d3e1] focus:ring-[#c6d3e1]" 
-                    required 
+                    aria-invalid={errors.email ? 'true' : 'false'}
+                    aria-describedby={errors.email ? 'email-error' : undefined}
                   />
+                  {errors.email && (
+                    <p id="email-error" role="alert" className="text-sm text-red-600">
+                      {errors.email.message}
+                    </p>
+                  )}
                 </div>
 
                 <div className="space-y-2">
@@ -180,29 +206,87 @@ export default function SignupPage() {
                   <Label htmlFor="password" className="text-sm font-medium text-slate-700">
                     Password
                   </Label>
-                  <Input
-                    id="password"
-                    name="password"
-                    type="password"
-                    placeholder="Create a strong password"
-                    className="w-full border-slate-300 focus:border-[#c6d3e1] focus:ring-[#c6d3e1]"
-                    required
-                  />
-                  <p className="text-xs text-slate-500">Must be at least 8 characters long</p>
+                  <div className="relative">
+                    <Input
+                      id="password"
+                      name="password"
+                      {...register('password')}
+                      type={showPassword ? 'text' : 'password'}
+                      placeholder="Create a strong password"
+                      className="w-full pr-10 border-slate-300 focus:border-[#c6d3e1] focus:ring-[#c6d3e1]"
+                      aria-invalid={errors.password ? 'true' : 'false'}
+                      aria-describedby={errors.password ? 'password-error' : 'password-help'}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="absolute inset-y-0 right-0 pr-3 flex items-center"
+                      aria-label={showPassword ? 'Hide password' : 'Show password'}
+                    >
+                      {showPassword ? (
+                        <EyeOff className="h-4 w-4 text-slate-500" />
+                      ) : (
+                        <Eye className="h-4 w-4 text-slate-500" />
+                      )}
+                    </button>
+                  </div>
+                  {passwordStrength && (
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs text-slate-500">Strength:</span>
+                      <span className={`text-xs font-medium ${
+                        passwordStrength === 'Weak' ? 'text-red-600' :
+                        passwordStrength === 'Fair' ? 'text-yellow-600' :
+                        'text-green-600'
+                      }`}>
+                        {passwordStrength}
+                      </span>
+                    </div>
+                  )}
+                  {errors.password && (
+                    <p id="password-error" role="alert" className="text-sm text-red-600">
+                      {errors.password.message}
+                    </p>
+                  )}
+                  {!errors.password && (
+                    <p id="password-help" className="text-xs text-slate-500">
+                      Must be at least 8 characters with 3 of: lowercase, uppercase, digit, symbol
+                    </p>
+                  )}
                 </div>
 
                 <div className="space-y-2">
                   <Label htmlFor="confirmPassword" className="text-sm font-medium text-slate-700">
                     Confirm Password
                   </Label>
-                  <Input
-                    id="confirmPassword"
-                    name="confirmPassword"
-                    type="password"
-                    placeholder="Confirm your password"
-                    className="w-full border-slate-300 focus:border-[#c6d3e1] focus:ring-[#c6d3e1]"
-                    required
-                  />
+                  <div className="relative">
+                    <Input
+                      id="confirmPassword"
+                      name="confirmPassword"
+                      {...register('confirmPassword')}
+                      type={showConfirmPassword ? 'text' : 'password'}
+                      placeholder="Confirm your password"
+                      className="w-full pr-10 border-slate-300 focus:border-[#c6d3e1] focus:ring-[#c6d3e1]"
+                      aria-invalid={errors.confirmPassword ? 'true' : 'false'}
+                      aria-describedby={errors.confirmPassword ? 'confirm-password-error' : undefined}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                      className="absolute inset-y-0 right-0 pr-3 flex items-center"
+                      aria-label={showConfirmPassword ? 'Hide confirm password' : 'Show confirm password'}
+                    >
+                      {showConfirmPassword ? (
+                        <EyeOff className="h-4 w-4 text-slate-500" />
+                      ) : (
+                        <Eye className="h-4 w-4 text-slate-500" />
+                      )}
+                    </button>
+                  </div>
+                  {errors.confirmPassword && (
+                    <p id="confirm-password-error" role="alert" className="text-sm text-red-600">
+                      {errors.confirmPassword.message}
+                    </p>
+                  )}
                 </div>
 
                 <div className="flex items-start space-x-2">
@@ -231,7 +315,7 @@ export default function SignupPage() {
                 <Button 
                   type="submit" 
                   className="w-full bg-[#c6d3e1] hover:bg-[#a8bcd2] text-[#2d3e50] shadow-elegant text-lg py-3"
-                  disabled={isPending}
+                  disabled={isPending || !isValid || !agreeToTerms}
                 >
                   {isPending ? "Creating Account..." : "Create Account"}
                 </Button>

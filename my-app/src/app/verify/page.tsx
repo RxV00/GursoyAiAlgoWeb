@@ -1,26 +1,30 @@
 import VerifyChoiceClient from './VerifyChoiceClient'
-import { autoResendVerification } from './actions'
 import { getPendingSignup } from '@/lib/auth/session'
 import { getSecureSessionCookie } from '@/lib/auth/cookies'
+import { VerifyPageClient } from './VerifyPageClient'
+import { redirect } from 'next/navigation'
+
+export const dynamic = 'force-dynamic'
 
 export default async function VerifyChoicePage() {
   // Check for new signup session
   const signupSessionId = await getSecureSessionCookie('signup-session')
   const pendingSignup = signupSessionId ? await getPendingSignup(signupSessionId) : null
-  
+
   if (!pendingSignup || pendingSignup.used) {
-    return null
+    // No valid signup session, redirect to signup
+    redirect('/signup')
   }
 
   // Auto-resend verification email once for fresh signups
   const autoResendKey = `auto-resend-${signupSessionId?.slice(-8)}`
   const hasAutoResent = await getSecureSessionCookie(autoResendKey)
-  
-  if (!hasAutoResent) {
-    // Perform auto-resend server-side
-    await autoResendVerification(pendingSignup.email, signupSessionId!)
-  }
 
-  return <VerifyChoiceClient email={pendingSignup.email} />
+  return (
+    <>
+      {!hasAutoResent && <VerifyPageClient email={pendingSignup.email} sessionId={signupSessionId!} />}
+      <VerifyChoiceClient email={pendingSignup.email} />
+    </>
+  )
 }
 

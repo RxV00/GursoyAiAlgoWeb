@@ -1,20 +1,10 @@
-"use client"
+import { createClient } from '@/lib/supabase/server'
+import { signOut } from '@/app/actions/signOut'
+import { NavbarClient } from './navbar-client'
 
-import { useState } from 'react'
-import { 
-  Navbar, 
-  NavBody, 
-  NavItems, 
-  NavbarLogo, 
-  NavbarButton, 
-  MobileNav, 
-  MobileNavHeader, 
-  MobileNavMenu, 
-  MobileNavToggle 
-} from '@/components/ui/resizable-navbar'
-
-export function AppNavbar() {
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+export async function AppNavbar() {
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
 
   const navItems = [
     { name: "Home", link: "/" },
@@ -24,35 +14,14 @@ export function AppNavbar() {
     { name: "Contact", link: "#contact" },
   ]
 
-  const toggleMobileMenu = () => {
-    setIsMobileMenuOpen(!isMobileMenuOpen)
-  }
+  const authItems = user 
+    ? [
+        { name: "Dashboard", link: "/dashboard" },
+      ]
+    : [
+        { name: "Login", link: "/login" },
+        { name: "Sign up", link: "/signup" },
+      ]
 
-  const handleItemClick = () => {
-    setIsMobileMenuOpen(false)
-  }
-
-  return (
-    <Navbar className="top-2">
-      <NavBody>
-        <NavbarLogo />
-        <NavItems items={navItems} />
-        <NavbarButton href="#contact" variant="primary">
-          Get Quote
-        </NavbarButton>
-      </NavBody>
-      <MobileNav>
-        <MobileNavHeader>
-          <NavbarLogo />
-          <MobileNavToggle isOpen={isMobileMenuOpen} onClick={toggleMobileMenu} />
-        </MobileNavHeader>
-        <MobileNavMenu isOpen={isMobileMenuOpen}>
-          <NavItems items={navItems} onItemClick={handleItemClick} />
-          <NavbarButton href="#measurement" variant="primary" className="mt-4">
-            Get Instant Quote
-          </NavbarButton>
-        </MobileNavMenu>
-      </MobileNav>
-    </Navbar>
-  )
+  return <NavbarClient navItems={navItems} authItems={authItems} user={user} signOut={signOut} />
 } 
