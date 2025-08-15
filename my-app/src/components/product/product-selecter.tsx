@@ -1,78 +1,37 @@
 import { useState } from "react"
-import { Check, ChevronRight, Play, Video } from "lucide-react"
+import { Check, ChevronRight, Play, Video, Loader2 } from "lucide-react"
 import { motion, AnimatePresence } from "framer-motion"
 import { cn } from "@/lib/utils"
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
+import { ProductVideoPlayer } from "./ProductVideoPlayer"
+import { useCategoriesHierarchy, useProductsWithDetails } from "@/lib/hooks/useDatabase"
+import type { ProductWithDetails, CategoryHierarchy } from "@/lib/types/database"
 
-// Mock data for demonstration
-const productCategories = [
-  {
-    id: "windows",
-    name: "Pencere Sistemleri",
-    windowTypes: [
-      {
-        id: "sliding",
-        name: "Sürme Sistemler",
-        brands: [
-          {
-            brandId: "cortizo",
-            brandName: "Cortizo",
-            products: [
-              { id: "cortizo-copision", name: "Copision Sürme" },
-              { id: "cortizo-copision-plus", name: "Copision Plus" },
-              { id: "cortizo-hebeschiebe", name: "Hebeschiebe" },
-            ],
-          },
-          {
-            brandId: "asisim",
-            brandName: "Asisim",
-            products: [
-              { id: "asisim-copision", name: "Copision Sürme" },
-              { id: "asisim-copision-plus", name: "Copision Plus" },
-            ],
-          },
-        ],
-      },
-      {
-        id: "classic",
-        name: "Klasik Sistemler",
-        brands: [
-          {
-            brandId: "rehau",
-            brandName: "Rehau",
-            products: [
-              { id: "rehau-klasik-standart", name: "Klasik Standart" },
-              { id: "rehau-klasik-premium", name: "Klasik Premium" },
-            ],
-          },
-        ],
-      },
-    ],
-  },
-  {
-    id: "outdoor",
-    name: "Dış Mekan Sistemleri",
-    products: [
-      { id: "panjur", name: "Panjur Sistemleri" },
-      { id: "zip-perde", name: "Zip Perde" },
-      { id: "pergola", name: "Pergola" },
-      { id: "gunes-kirici", name: "Güneş Kırıcı" },
-    ],
-  },
-]
+// Database-driven product selector - using Supabase data
 
 interface ProductSelectorProps {
-  onProductSelect: (productId: string) => void
+  onProductSelect: (product: ProductWithDetails) => void
   selectedProduct: string | null
 }
 
 export function ProductSelector({ onProductSelect, selectedProduct }: ProductSelectorProps) {
+  // Database hooks
+  const { data: categories, isLoading: categoriesLoading, error: categoriesError } = useCategoriesHierarchy()
+  const { data: products, isLoading: productsLoading, error: productsError } = useProductsWithDetails()
+
+  // UI state
   const [openCategories, setOpenCategories] = useState<string[]>([])
   const [openWindowTypes, setOpenWindowTypes] = useState<string[]>([])
   const [openBrands, setOpenBrands] = useState<string[]>([])
   const [openProducts, setOpenProducts] = useState<string[]>([])
+
+  // Loading and error states
+  const isLoading = categoriesLoading || productsLoading
+  const hasError = categoriesError || productsError
+
+  // Debug logging removed for production stability
 
   const toggleCategory = (categoryId: string) => {
     setOpenCategories((prev) =>
@@ -94,10 +53,66 @@ export function ProductSelector({ onProductSelect, selectedProduct }: ProductSel
     setOpenProducts((prev) => (prev.includes(productId) ? prev.filter((id) => id !== productId) : [...prev, productId]))
   }
 
-  const getExampleVideos = (productId: string) => {
-    // Mock video data
-    return [`Demo Video 1 - ${productId}`, `Demo Video 2 - ${productId}`]
+  // Helper functions to organize database data
+  const findCategoryNodeById = (
+    nodes: CategoryHierarchy[] | undefined,
+    id: string
+  ): CategoryHierarchy | undefined => {
+    if (!nodes) return undefined
+    for (const node of nodes) {
+      if (node.id === id) return node
+      const found = findCategoryNodeById(node.children, id)
+      if (found) return found
+    }
+    return undefined
   }
+
+  const collectCategoryIds = (node: CategoryHierarchy | undefined): string[] => {
+    if (!node) return []
+    const ids: string[] = [node.id]
+    if (node.children && node.children.length > 0) {
+      for (const child of node.children) {
+        ids.push(...collectCategoryIds(child))
+      }
+    }
+    return ids
+  }
+
+  const getDescendantCategoryIdsFor = (categoryId: string): string[] => {
+    const node = findCategoryNodeById(categories, categoryId)
+    return node ? collectCategoryIds(node) : [categoryId]
+  }
+
+  const getProductsForCategory = (categoryId: string): ProductWithDetails[] => {
+    if (!products) return []
+    const categoryIds = getDescendantCategoryIdsFor(categoryId)
+    return products.filter(product => categoryIds.includes(product.category_id))
+  }
+
+
+  const getManufacturersForCategory = (categoryId: string) => {
+    const categoryProducts = getProductsForCategory(categoryId)
+    const manufacturerMap = new Map<string, { 
+      id: string, 
+      name: string, 
+      products: ProductWithDetails[] 
+    }>()
+
+    categoryProducts.forEach(product => {
+      const manufacturerId = product.manufacturer.id
+      if (!manufacturerMap.has(manufacturerId)) {
+        manufacturerMap.set(manufacturerId, {
+          id: manufacturerId,
+          name: product.manufacturer.name,
+          products: []
+        })
+      }
+      manufacturerMap.get(manufacturerId)!.products.push(product)
+    })
+
+    return Array.from(manufacturerMap.values())
+  }
+
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -114,6 +129,40 @@ export function ProductSelector({ onProductSelect, selectedProduct }: ProductSel
     visible: { opacity: 1, y: 0 },
   }
 
+  // Loading state
+  if (isLoading) {
+    return (
+      <div className="space-y-2 p-4 bg-gradient-to-br from-slate-50 to-blue-50 rounded-xl border border-slate-200 font-inter">
+        <div className="flex items-center justify-center py-8">
+          <Loader2 className="h-6 w-6 animate-spin text-blue-600" />
+          <span className="ml-2 text-slate-600">Loading products...</span>
+        </div>
+      </div>
+    )
+  }
+
+  // Error state
+  if (hasError) {
+    return (
+      <div className="space-y-2 p-4 bg-gradient-to-br from-slate-50 to-red-50 rounded-xl border border-red-200 font-inter">
+        <div className="flex items-center justify-center py-8 text-red-600">
+          <span>Failed to load products. Please refresh the page.</span>
+        </div>
+      </div>
+    )
+  }
+
+  // No data state
+  if (!categories || categories.length === 0) {
+    return (
+      <div className="space-y-2 p-4 bg-gradient-to-br from-slate-50 to-blue-50 rounded-xl border border-slate-200 font-inter">
+        <div className="flex items-center justify-center py-8 text-slate-600">
+          <span>No products available.</span>
+        </div>
+      </div>
+    )
+  }
+
   return (
     <motion.div
       className="space-y-2 p-4 bg-gradient-to-br from-slate-50 to-blue-50 rounded-xl border border-slate-200 font-inter"
@@ -121,8 +170,13 @@ export function ProductSelector({ onProductSelect, selectedProduct }: ProductSel
       initial="hidden"
       animate="visible"
     >
-      {productCategories.map((category) => {
+      {categories.filter(category => !category.parent_id).map((category) => {
         const isCategoryOpen = openCategories.includes(category.id)
+        const childCategories = (category.children || []) as CategoryHierarchy[]
+        const directProducts = getProductsForCategory(category.id)
+        
+        // Debug logging removed
+        
         return (
           <motion.div key={category.id} variants={itemVariants}>
             <Collapsible open={isCategoryOpen} onOpenChange={() => toggleCategory(category.id)}>
@@ -157,10 +211,14 @@ export function ProductSelector({ onProductSelect, selectedProduct }: ProductSel
                       transition={{ duration: 0.4, ease: "easeInOut" }}
                       className="mt-4 space-y-3 overflow-hidden"
                     >
-                      {category.windowTypes ? (
+                      {childCategories.length > 0 ? (
                         <div className="space-y-3 ml-6">
-                          {category.windowTypes.map((windowType) => {
+                          {childCategories.map((windowType) => {
                             const isWindowTypeOpen = openWindowTypes.includes(windowType.id)
+                            const windowTypeManufacturers = getManufacturersForCategory(windowType.id)
+                            
+                            // Debug logging removed
+                            
                             return (
                               <Collapsible
                                 key={windowType.id}
@@ -198,8 +256,8 @@ export function ProductSelector({ onProductSelect, selectedProduct }: ProductSel
                                         transition={{ duration: 0.3, ease: "easeInOut" }}
                                         className="mt-3 space-y-2 ml-4 overflow-hidden"
                                       >
-                                        {windowType.brands.map((brand) => {
-                                          const brandKey = `${windowType.id}-${brand.brandId}`
+                                        {windowTypeManufacturers.map((brand) => {
+                                          const brandKey = `${windowType.id}-${brand.id}`
                                           const isBrandOpen = openBrands.includes(brandKey)
                                           return (
                                             <Collapsible
@@ -217,7 +275,7 @@ export function ProductSelector({ onProductSelect, selectedProduct }: ProductSel
                                                       variant="secondary"
                                                       className="bg-blue-100 text-blue-700 hover:bg-blue-200 font-medium text-sm px-2 py-1 group-hover:scale-105 transition-all duration-300"
                                                     >
-                                                      {brand.brandName}
+                                                      {brand.name}
                                                     </Badge>
                                                   </div>
                                                   <motion.div
@@ -242,7 +300,7 @@ export function ProductSelector({ onProductSelect, selectedProduct }: ProductSel
                                                     >
                                                       {brand.products.map((product) => {
                                                         const isProductOpen = openProducts.includes(product.id)
-                                                        const productVideos = getExampleVideos(product.id)
+                                                        const productVideos = product.videos || []
                                                         const isSelected = selectedProduct === product.id
 
                                                         return (
@@ -254,7 +312,7 @@ export function ProductSelector({ onProductSelect, selectedProduct }: ProductSel
                                                           >
                                                             <div className="flex items-center space-x-2">
                                                               <motion.button
-                                                                onClick={() => onProductSelect(product.id)}
+                                                                onClick={() => onProductSelect(product)}
                                                                 className={cn(
                                                                   "flex-1 flex items-center justify-between p-3 rounded-xl border-2 transition-all duration-400 group font-medium",
                                                                   isSelected
@@ -327,7 +385,7 @@ export function ProductSelector({ onProductSelect, selectedProduct }: ProductSel
                                                                   <div className="grid grid-cols-1 gap-2">
                                                                     {productVideos.map((video, index) => (
                                                                       <motion.div
-                                                                        key={index}
+                                                                        key={video.id}
                                                                         initial={{ opacity: 0, scale: 0.8, y: 20 }}
                                                                         animate={{ opacity: 1, scale: 1, y: 0 }}
                                                                         transition={{
@@ -335,25 +393,18 @@ export function ProductSelector({ onProductSelect, selectedProduct }: ProductSel
                                                                           delay: index * 0.1,
                                                                           ease: "easeOut",
                                                                         }}
-                                                                        className="relative bg-white rounded-xl aspect-video flex items-center justify-center hover:bg-blue-50 transition-all duration-300 cursor-pointer border border-blue-200 group shadow-sm hover:shadow-lg"
+                                                                        className="relative bg-white rounded-xl overflow-hidden hover:bg-blue-50 transition-all duration-300 cursor-pointer border border-blue-200 group shadow-sm hover:shadow-lg"
                                                                         whileHover={{ scale: 1.03, y: -4 }}
                                                                         whileTap={{ scale: 0.97 }}
                                                                       >
-                                                                        <div className="flex flex-col items-center space-y-3">
-                                                                          <div className="w-14 h-14 bg-blue-100 rounded-full flex items-center justify-center group-hover:bg-blue-200 group-hover:scale-110 transition-all duration-300">
-                                                                            <Play className="h-7 w-7 text-blue-600 ml-1" />
-                                                                          </div>
-                                                                          <span className="text-sm font-semibold text-blue-700 tracking-tight">
-                                                                            Video {index + 1}
-                                                                          </span>
-                                                                        </div>
-                                                                        <div className="absolute top-3 right-3">
-                                                                          <Badge
-                                                                            variant="secondary"
-                                                                            className="bg-blue-100 text-blue-700 text-xs font-medium px-2 py-1 group-hover:scale-105 transition-all duration-300"
-                                                                          >
-                                                                            Demo
-                                                                          </Badge>
+                                                                        <div className="relative">
+                                                                          <ProductVideoPlayer
+                                                                            video={video}
+                                                                            controls={true}
+                                                                            className="w-full h-32"
+                                                                            autoPlay={false}
+                                                                            muted={true}
+                                                                          />
                                                                         </div>
                                                                       </motion.div>
                                                                     ))}
@@ -379,8 +430,8 @@ export function ProductSelector({ onProductSelect, selectedProduct }: ProductSel
                             )
                           })}
                         </div>
-                      ) : (
-                                                  <div className="space-y-2 ml-6">
+                      ) : directProducts.length > 0 ? (
+                        <div className="space-y-2 ml-6">
                           <Collapsible
                             open={openWindowTypes.includes(category.id)}
                             onOpenChange={() => toggleWindowType(category.id)}
@@ -414,9 +465,9 @@ export function ProductSelector({ onProductSelect, selectedProduct }: ProductSel
                                     transition={{ duration: 0.3, ease: "easeInOut" }}
                                                                             className="mt-2 space-y-2 ml-4 overflow-hidden"
                                       >
-                                        {category.products?.map((product) => {
+                                        {directProducts.map((product) => {
                                           const isProductOpen = openProducts.includes(product.id)
-                                          const productVideos = getExampleVideos(product.id)
+                                          const productVideos = product.videos || []
                                           const isSelected = selectedProduct === product.id
 
                                           return (
@@ -428,7 +479,7 @@ export function ProductSelector({ onProductSelect, selectedProduct }: ProductSel
                                             >
                                           <div className="flex items-center space-x-2">
                                             <motion.button
-                                              onClick={() => onProductSelect(product.id)}
+                                              onClick={() => onProductSelect(product)}
                                               className={cn(
                                                 "flex-1 flex items-center justify-between p-3 rounded-xl border-2 transition-all duration-400 group font-medium",
                                                 isSelected
@@ -501,7 +552,7 @@ export function ProductSelector({ onProductSelect, selectedProduct }: ProductSel
                                                 <div className="grid grid-cols-1 gap-3">
                                                   {productVideos.map((video, index) => (
                                                     <motion.div
-                                                      key={index}
+                                                      key={video.id}
                                                       initial={{ opacity: 0, scale: 0.8, y: 20 }}
                                                       animate={{ opacity: 1, scale: 1, y: 0 }}
                                                       transition={{
@@ -509,25 +560,18 @@ export function ProductSelector({ onProductSelect, selectedProduct }: ProductSel
                                                         delay: index * 0.1,
                                                         ease: "easeOut",
                                                       }}
-                                                      className="relative bg-white rounded-xl aspect-video flex items-center justify-center hover:bg-blue-50 transition-all duration-300 cursor-pointer border border-blue-200 group shadow-sm hover:shadow-lg"
+                                                      className="relative bg-white rounded-xl overflow-hidden hover:bg-blue-50 transition-all duration-300 cursor-pointer border border-blue-200 group shadow-sm hover:shadow-lg"
                                                       whileHover={{ scale: 1.03, y: -4 }}
                                                       whileTap={{ scale: 0.97 }}
                                                     >
-                                                      <div className="flex flex-col items-center space-y-3">
-                                                        <div className="w-14 h-14 bg-blue-100 rounded-full flex items-center justify-center group-hover:bg-blue-200 group-hover:scale-110 transition-all duration-300">
-                                                          <Play className="h-7 w-7 text-blue-600 ml-1" />
-                                                        </div>
-                                                        <span className="text-sm font-semibold text-blue-700 tracking-tight">
-                                                          Video {index + 1}
-                                                        </span>
-                                                      </div>
-                                                      <div className="absolute top-3 right-3">
-                                                        <Badge
-                                                          variant="secondary"
-                                                          className="bg-blue-100 text-blue-700 text-xs font-medium px-2 py-1 group-hover:scale-105 transition-all duration-300"
-                                                        >
-                                                          Demo
-                                                        </Badge>
+                                                      <div className="relative">
+                                                        <ProductVideoPlayer
+                                                          video={video}
+                                                          controls={true}
+                                                          className="w-full h-40"
+                                                          autoPlay={false}
+                                                          muted={true}
+                                                        />
                                                       </div>
                                                     </motion.div>
                                                   ))}
@@ -544,7 +588,7 @@ export function ProductSelector({ onProductSelect, selectedProduct }: ProductSel
                             </AnimatePresence>
                           </Collapsible>
                         </div>
-                      )}
+                      ) : null}
                     </motion.div>
                   </CollapsibleContent>
                 )}

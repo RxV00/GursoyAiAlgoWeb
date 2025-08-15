@@ -2,20 +2,23 @@
 import { useState, useEffect } from 'react'
 import { Upload, Loader2 } from 'lucide-react'
 import { cn } from '@/lib/utils'
-import { Measurements } from '@/lib/pricing'
-
 interface PhotoUploadProps {
-  onMeasurementsExtracted: (measurements: Measurements) => void
-  productType: string | null
+  isAuthenticated: boolean
+  onMeasurementsExtracted: (measurements: any) => void
 }
 
-export function PhotoUpload({ onMeasurementsExtracted, productType }: PhotoUploadProps) {
+export function PhotoUpload({ isAuthenticated, onMeasurementsExtracted }: PhotoUploadProps) {
   const [isUploading, setIsUploading] = useState(false)
   const [uploadedImage, setUploadedImage] = useState<string | null>(null)
 
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (!file) return
+
+    if (!isAuthenticated) {
+      window.location.href = '/login'
+      return
+    }
 
     setIsUploading(true)
     
@@ -35,6 +38,7 @@ export function PhotoUpload({ onMeasurementsExtracted, productType }: PhotoUploa
       onMeasurementsExtracted({
         width: 240,
         height: 180,
+        quantity: 1,
         unit: 'cm',
         confidence: 0.95
       })
@@ -56,7 +60,7 @@ export function PhotoUpload({ onMeasurementsExtracted, productType }: PhotoUploa
           type="file"
           accept="image/*"
           onChange={handleFileUpload}
-          disabled={!productType || isUploading}
+          disabled={isUploading || !isAuthenticated}
           className="hidden"
           id="photo-upload"
         />
@@ -64,9 +68,7 @@ export function PhotoUpload({ onMeasurementsExtracted, productType }: PhotoUploa
           htmlFor="photo-upload"
           className={cn(
             'flex flex-col items-center justify-center w-full h-48 border-2 border-dashed rounded-lg cursor-pointer transition-colors',
-            productType
-              ? 'border-gray-300 hover:border-accent bg-gray-50 hover:bg-accent/5'
-              : 'border-gray-200 bg-gray-50 cursor-not-allowed'
+            isAuthenticated ? 'border-gray-300 hover:border-blue-400 bg-gray-50 hover:bg-blue-50' : 'border-amber-300 bg-amber-50'
           )}
         >
           {uploadedImage ? (
@@ -79,10 +81,10 @@ export function PhotoUpload({ onMeasurementsExtracted, productType }: PhotoUploa
             <>
               <Upload className="h-8 w-8 text-gray-400 mb-2" />
               <p className="text-sm text-gray-600">
-                Click to upload or drag and drop
+                {isAuthenticated ? 'Click to upload or drag and drop' : 'Sign in to upload photos'}
               </p>
               <p className="text-xs text-gray-500 mt-1">
-                PNG, JPG up to 10MB
+                {isAuthenticated ? 'PNG, JPG up to 10MB' : 'Photo analysis requires authentication'}
               </p>
             </>
           )}
