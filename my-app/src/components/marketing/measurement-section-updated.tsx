@@ -34,7 +34,7 @@ export function MeasurementSection({ isAuthenticated }: MeasurementSectionProps)
         toast.error('Failed to save quote.')
       } else {
         toast.success('Quote saved successfully!')
-        // Stay on the page; no redirect
+        router.push('/dashboard')
       }
     })
   }

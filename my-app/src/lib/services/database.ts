@@ -298,17 +298,24 @@ export class DatabaseService {
     userId: string,
     productId: string,
     measurements: Record<string, number>,
-    quantity: number = 1
+    quantity: number = 1,
+    calculatedPrice?: number,
+    pricePerUnit?: number
   ): Promise<DatabaseUserMeasurement> {
     const supabase = await this.getSupabase()
+    const insertData: any = {
+      user_id: userId,
+      product_id: productId,
+      measurements,
+      quantity
+    }
+    
+    if (calculatedPrice !== undefined) insertData.calculated_price = Math.round(calculatedPrice)
+    // price_per_unit removed from schema
+    
     const { data, error } = await supabase
       .from('user_measurements')
-      .insert({
-        user_id: userId,
-        product_id: productId,
-        measurements,
-        quantity
-      })
+      .insert(insertData)
       .select()
       .single()
 
@@ -375,17 +382,23 @@ export class DatabaseService {
     userId: string,
     measurementId: string,
     measurements: Record<string, number>,
-    quantity?: number
+    quantity?: number,
+    calculatedPrice?: number,
+    pricePerUnit?: number
   ): Promise<DatabaseUserMeasurement> {
     const updateData: { 
       measurements: Record<string, number>
       updated_at: string
       quantity?: number
+      calculated_price?: number
+      price_per_unit?: number
     } = { 
       measurements, 
       updated_at: new Date().toISOString() 
     }
     if (quantity !== undefined) updateData.quantity = quantity
+    if (calculatedPrice !== undefined) updateData.calculated_price = Math.round(calculatedPrice)
+    // price_per_unit removed from schema
 
     const supabase = await this.getSupabase()
     const { data, error } = await supabase
@@ -426,6 +439,7 @@ export class DatabaseService {
     if (error) throw new Error(`Failed to fetch product measurements: ${error.message}`)
     return data || []
   }
+
 
   // Utility methods
   async searchProducts(searchTerm: string, limit?: number): Promise<ProductWithDetails[]> {

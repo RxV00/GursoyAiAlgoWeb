@@ -51,7 +51,12 @@ export async function POST(request: NextRequest) {
   }
 
   try {
-    const { product_id, measurements, quantity = 1 } = await request.json()
+    const { 
+      product_id, 
+      measurements, 
+      quantity = 1, 
+      calculated_price
+    } = await request.json()
 
     if (!product_id || !measurements || typeof measurements !== 'object') {
       return NextResponse.json(
@@ -77,12 +82,23 @@ export async function POST(request: NextRequest) {
       )
     }
 
+    // Validate price fields if provided
+    if (calculated_price !== undefined && (typeof calculated_price !== 'number' || calculated_price < 0)) {
+      return NextResponse.json(
+        { success: false, error: 'Invalid calculated price' },
+        { status: 400 }
+      )
+    }
+
+    // price_per_unit removed
+
     const db = new DatabaseService()
     const savedMeasurement = await db.saveUserMeasurement(
       user.id,
       product_id,
       measurements,
-      quantity
+      quantity,
+      calculated_price
     )
 
     return NextResponse.json({

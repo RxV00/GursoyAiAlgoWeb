@@ -39,6 +39,7 @@ export interface DatabaseUserMeasurement {
   product_id: string
   measurements: Record<string, number> // JSONB as key-value pairs
   quantity?: number
+  calculated_price?: number
   created_at: string
   updated_at: string
 }
@@ -86,7 +87,6 @@ export interface QuoteResult {
   measurements: Record<string, number>
   quantity: number
   calculated_price: number
-  price_per_unit: number
   created_at: string
 }
 
