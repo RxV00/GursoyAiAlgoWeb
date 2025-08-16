@@ -1,8 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
-import { calculatePrice } from '@/lib/pricing'
-import { DatabaseService } from '@/lib/services/database'
-import { mapDatabaseProductToLegacy } from '@/lib/utils/productMapping'
+import { calculatePriceFromDatabase } from '@/lib/database-pricing'
 
 export async function POST(request: NextRequest) {
   const supabase = await createClient()
@@ -26,38 +24,24 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Try to get product from database first
-    const db = new DatabaseService()
-    const dbProduct = await db.getProductWithDetails(productId)
+    // Calculate price using database-only approach
+    const pricingResult = await calculatePriceFromDatabase(productId, measurements, quantity)
     
-    let price = 0
-    
-    if (dbProduct) {
-      // Use database product with legacy pricing mapping
-      const legacyProduct = mapDatabaseProductToLegacy(dbProduct)
-      if (legacyProduct) {
-        price = calculatePrice(legacyProduct.id, measurements)
-      } else {
-        // Fallback calculation for unmapped products
-        const basePrice = 250 // Default base price
-        const area = (measurements.width * measurements.height) / 10000 // Convert cm² to m²
-        price = basePrice * area
-      }
-    } else {
-      // Fallback to legacy product-data system
-      price = calculatePrice(productId, measurements)
+    if (!pricingResult) {
+      return NextResponse.json(
+        { success: false, error: 'Product not found' },
+        { status: 404 }
+      )
     }
-
-    // Apply quantity multiplier
-    const totalPrice = price * quantity
     
     return NextResponse.json({ 
       success: true,
-      price: totalPrice,
-      pricePerUnit: price,
+      price: pricingResult.price,
+      pricePerUnit: pricingResult.pricePerUnit,
       quantity,
-      productId,
-      measurements
+      productId: pricingResult.product.id,
+      measurements,
+      area: pricingResult.area
     })
   } catch (error) {
     console.error('Pricing calculation error:', error)

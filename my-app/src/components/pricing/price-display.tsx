@@ -1,7 +1,7 @@
 'use client'
 
 import { Button } from '@/components/ui/button'
-import { Measurements } from '@/lib/pricing'
+import { Measurements } from '@/lib/product-utils'
 import { ChevronDown, Calculator, Package, Wrench, FileText } from 'lucide-react'
 import { motion } from 'framer-motion'
 import * as Accordion from '@radix-ui/react-accordion'

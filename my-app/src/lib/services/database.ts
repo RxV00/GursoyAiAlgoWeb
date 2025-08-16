@@ -253,6 +253,7 @@ export class DatabaseService {
     return data
   }
 
+
   // Video methods
   async getProductVideos(productId: string): Promise<DatabaseProductVideo[]> {
     const supabase = await this.getSupabase()
@@ -299,11 +300,10 @@ export class DatabaseService {
     productId: string,
     measurements: Record<string, number>,
     quantity: number = 1,
-    calculatedPrice?: number,
-    pricePerUnit?: number
+    calculatedPrice?: number
   ): Promise<DatabaseUserMeasurement> {
     const supabase = await this.getSupabase()
-    const insertData: any = {
+    const insertData: Record<string, unknown> = {
       user_id: userId,
       product_id: productId,
       measurements,
@@ -383,22 +383,19 @@ export class DatabaseService {
     measurementId: string,
     measurements: Record<string, number>,
     quantity?: number,
-    calculatedPrice?: number,
-    pricePerUnit?: number
+    calculatedPrice?: number
   ): Promise<DatabaseUserMeasurement> {
     const updateData: { 
       measurements: Record<string, number>
       updated_at: string
       quantity?: number
       calculated_price?: number
-      price_per_unit?: number
     } = { 
       measurements, 
       updated_at: new Date().toISOString() 
     }
     if (quantity !== undefined) updateData.quantity = quantity
     if (calculatedPrice !== undefined) updateData.calculated_price = Math.round(calculatedPrice)
-    // price_per_unit removed from schema
 
     const supabase = await this.getSupabase()
     const { data, error } = await supabase

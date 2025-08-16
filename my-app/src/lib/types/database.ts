@@ -22,6 +22,8 @@ export interface DatabaseProduct {
   manufacturer_id: string
   name: string
   description?: string
+  base_price?: number
+  measurement_fields?: string[]
   created_at: string
 }
 

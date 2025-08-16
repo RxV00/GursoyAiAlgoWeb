@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { PriceDisplay } from './price-display'
 import { User } from '@supabase/supabase-js'
-import { Measurements } from '@/lib/pricing'
+import { Measurements } from '@/lib/product-utils'
 
 interface ProtectedPricingProps {
   product: string | null

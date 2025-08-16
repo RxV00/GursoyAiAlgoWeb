@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { Check, ChevronRight, Play, Video, Loader2 } from "lucide-react"
+import { Check, ChevronRight, Video, Loader2 } from "lucide-react"
 import { motion, AnimatePresence } from "framer-motion"
 import { cn } from "@/lib/utils"
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible"

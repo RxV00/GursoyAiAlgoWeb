@@ -4,13 +4,13 @@ import { useState } from 'react'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
-import { getDatabaseProductMeasurementFields, getDatabaseProductBasePrice } from '@/lib/utils/productMapping'
+import { getProductMeasurementFields } from '@/lib/product-utils'
 import type { ProductWithDetails } from '@/lib/types/database'
 
 interface MeasurementFormProps {
   product: ProductWithDetails
   isAuthenticated: boolean
-  onCalculate: (price: number, measurementData: any) => void
+  onCalculate: (price: number, measurementData: Record<string, number | string>) => void
 }
 
 export function MeasurementForm({ product, isAuthenticated, onCalculate }: MeasurementFormProps) {
@@ -20,7 +20,7 @@ export function MeasurementForm({ product, isAuthenticated, onCalculate }: Measu
     quantity: '1'
   })
 
-  const fields = getDatabaseProductMeasurementFields(product)
+  const fields = getProductMeasurementFields(product)
   const disabled = !product
   const handleChange = (field: string, value: string) => {
     setValues((prev) => ({ ...prev, [field]: value }))
@@ -43,12 +43,8 @@ export function MeasurementForm({ product, isAuthenticated, onCalculate }: Measu
         unit: 'cm'
       }
       
-      // Calculate price using database product
-      const basePrice = getDatabaseProductBasePrice(product)
-      const area = measurementData.width * measurementData.height / 10000 // convert cm² to m²
-      const totalPrice = basePrice * area * measurementData.quantity
-      
-      onCalculate(totalPrice, measurementData)
+      // Pass measurements to parent component for API-based pricing calculation
+      onCalculate(0, measurementData) // Price will be calculated via API
     }
   }
   return (
