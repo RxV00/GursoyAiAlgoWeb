@@ -3,6 +3,18 @@ import { createClient } from '@/lib/supabase/server'
 import { DatabaseService } from '@/lib/services/database'
 
 export async function GET(request: NextRequest) {
+  // Prevent direct browser access - only allow programmatic requests
+  const userAgent = request.headers.get('user-agent') || ''
+  const accept = request.headers.get('accept') || ''
+  
+  // Block direct browser navigation (when user types URL in address bar)
+  if (userAgent.includes('Mozilla') && accept.includes('text/html')) {
+    return NextResponse.json(
+      { success: false, error: 'Direct access not allowed' },
+      { status: 403 }
+    )
+  }
+
   const supabase = await createClient()
   const { data: { user }, error: authError } = await supabase.auth.getUser()
 
@@ -40,6 +52,18 @@ export async function GET(request: NextRequest) {
 }
 
 export async function POST(request: NextRequest) {
+  // Prevent direct browser access - only allow programmatic requests
+  const userAgent = request.headers.get('user-agent') || ''
+  const accept = request.headers.get('accept') || ''
+  
+  // Block direct browser navigation
+  if (userAgent.includes('Mozilla') && accept.includes('text/html')) {
+    return NextResponse.json(
+      { success: false, error: 'Direct access not allowed' },
+      { status: 403 }
+    )
+  }
+
   const supabase = await createClient()
   const { data: { user }, error: authError } = await supabase.auth.getUser()
 

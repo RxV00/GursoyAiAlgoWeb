@@ -6,6 +6,18 @@ export async function GET(
   request: NextRequest,
   { params }: { params: { id: string } }
 ) {
+  // Prevent direct browser access - only allow programmatic requests
+  const userAgent = request.headers.get('user-agent') || ''
+  const accept = request.headers.get('accept') || ''
+  
+  // Block direct browser navigation
+  if (userAgent.includes('Mozilla') && accept.includes('text/html')) {
+    return NextResponse.json(
+      { success: false, error: 'Direct access not allowed' },
+      { status: 403 }
+    )
+  }
+
   const supabase = await createClient()
   const { data: { user }, error: authError } = await supabase.auth.getUser()
 
@@ -44,6 +56,18 @@ export async function PUT(
   request: NextRequest,
   { params }: { params: { id: string } }
 ) {
+  // Prevent direct browser access - only allow programmatic requests
+  const userAgent = request.headers.get('user-agent') || ''
+  const accept = request.headers.get('accept') || ''
+  
+  // Block direct browser navigation
+  if (userAgent.includes('Mozilla') && accept.includes('text/html')) {
+    return NextResponse.json(
+      { success: false, error: 'Direct access not allowed' },
+      { status: 403 }
+    )
+  }
+
   const supabase = await createClient()
   const { data: { user }, error: authError } = await supabase.auth.getUser()
 
@@ -106,6 +130,18 @@ export async function DELETE(
   request: NextRequest,
   { params }: { params: { id: string } }
 ) {
+  // Prevent direct browser access - only allow programmatic requests
+  const userAgent = request.headers.get('user-agent') || ''
+  const accept = request.headers.get('accept') || ''
+  
+  // Block direct browser navigation
+  if (userAgent.includes('Mozilla') && accept.includes('text/html')) {
+    return NextResponse.json(
+      { success: false, error: 'Direct access not allowed' },
+      { status: 403 }
+    )
+  }
+
   const supabase = await createClient()
   const { data: { user }, error: authError } = await supabase.auth.getUser()
 

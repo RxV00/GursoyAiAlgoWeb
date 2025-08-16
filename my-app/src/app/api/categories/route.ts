@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { DatabaseService } from '@/lib/services/database'
 
+// Public endpoint - no auth required for basic category listing
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url)

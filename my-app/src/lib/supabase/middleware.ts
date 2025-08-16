@@ -48,18 +48,22 @@ export async function updateSession(request: NextRequest) {
   // Protect sensitive routes; public pages remain accessible
   // Gatekeeping rules
   const isVerify = request.nextUrl.pathname.startsWith('/verify')
-  // Phone verification routes removed
   const isDashboard = request.nextUrl.pathname.startsWith('/dashboard')
+  const isPricing = request.nextUrl.pathname === '/pricing'
+  const isPricingAPI = request.nextUrl.pathname.startsWith('/api/pricing') || 
+                      request.nextUrl.pathname.startsWith('/api/user')
   const isLogin = request.nextUrl.pathname === '/login'
   const isSignup = request.nextUrl.pathname === '/signup'
 
   // Unauthenticated users:
-  // - dashboard -> login
+  // - dashboard/pricing -> login with next parameter
+  // - pricing APIs -> 401 (handled in API)
   // - verify/phone -> require pending + token else redirect signup
   if (!user) {
-    if (isDashboard) {
+    if (isDashboard || isPricing) {
       const url = request.nextUrl.clone()
       url.pathname = '/login'
+      url.searchParams.set('next', request.nextUrl.pathname)
       return NextResponse.redirect(url)
     }
     if (isVerify) {

@@ -1,18 +1,8 @@
-import { redirect } from 'next/navigation'
-import { createClient } from '@/lib/supabase/server'
+'use client'
+
 import { MeasurementSection } from '@/components/marketing/measurement-section'
 
-export const dynamic = 'force-dynamic'
-
-export default async function PricingPage() {
-  const supabase = await createClient()
-  
-  const { data: { user }, error } = await supabase.auth.getUser()
-  
-  if (error || !user) {
-    redirect('/login?next=' + encodeURIComponent('/pricing'))
-  }
-
+export default function PricingPage() {
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white">
       <div className="container mx-auto px-4 pt-24">

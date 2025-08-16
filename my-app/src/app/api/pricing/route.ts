@@ -3,6 +3,18 @@ import { createClient } from '@/lib/supabase/server'
 import { calculatePriceFromDatabase } from '@/lib/database-pricing'
 
 export async function POST(request: NextRequest) {
+  // Prevent direct browser access - only allow programmatic requests
+  const userAgent = request.headers.get('user-agent') || ''
+  const accept = request.headers.get('accept') || ''
+  
+  // Block direct browser navigation
+  if (userAgent.includes('Mozilla') && accept.includes('text/html')) {
+    return NextResponse.json(
+      { error: 'Direct access not allowed' },
+      { status: 403 }
+    )
+  }
+
   const supabase = await createClient()
   
   const { data: { user }, error } = await supabase.auth.getUser()
@@ -52,7 +64,19 @@ export async function POST(request: NextRequest) {
   }
 }
 
-export async function GET() {
+export async function GET(request: NextRequest) {
+  // Prevent direct browser access - only allow programmatic requests
+  const userAgent = request.headers.get('user-agent') || ''
+  const accept = request.headers.get('accept') || ''
+  
+  // Block direct browser navigation
+  if (userAgent.includes('Mozilla') && accept.includes('text/html')) {
+    return NextResponse.json(
+      { error: 'Direct access not allowed' },
+      { status: 403 }
+    )
+  }
+
   const supabase = await createClient()
   
   const { data: { user }, error } = await supabase.auth.getUser()
