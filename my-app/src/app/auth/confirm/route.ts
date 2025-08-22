@@ -2,6 +2,7 @@ import { type EmailOtpType } from '@supabase/supabase-js'
 import { type NextRequest } from 'next/server'
 
 import { createClient } from '@/lib/supabase/server'
+import { markSignupUsed } from '@/lib/auth/session'
 import { redirect } from 'next/navigation'
 
 export async function GET(request: NextRequest) {
@@ -16,6 +17,8 @@ export async function GET(request: NextRequest) {
     const supabase = await createClient()
     const { error } = await supabase.auth.exchangeCodeForSession(code)
     if (!error) {
+      // Mark signup session as used to clean up
+      await markSignupUsed()
       redirect(next)
     }
   }
@@ -28,6 +31,8 @@ export async function GET(request: NextRequest) {
       token_hash,
     })
     if (!error) {
+      // Mark signup session as used to clean up
+      await markSignupUsed()
       redirect(next)
     }
   }

@@ -2,21 +2,13 @@
 
 import { createClient } from '@/lib/supabase/server'
 import { getPendingSignup, canResendEmail, recordEmailResend } from '@/lib/auth/session'
-import { getSecureSessionCookie, setSecureSessionCookie } from '@/lib/auth/cookies'
 import { env } from '@/lib/env'
 
 export type ResendState = { ok: boolean; error?: string }
 
-export async function autoResendVerification(email: string, sessionId: string): Promise<void> {
+export async function autoResendVerification(email: string): Promise<void> {
   const supabase = await createClient()
   
-  const autoResendKey = `auto-resend-${sessionId.slice(-8)}`
-  
-  // Check if auto-resend already happened for this session
-  if (await getSecureSessionCookie(autoResendKey)) {
-    return // Already auto-resent for this session
-  }
-
   // Check server-side rate limit
   const canResend = await canResendEmail(email)
   if (!canResend.allowed) {
@@ -40,9 +32,6 @@ export async function autoResendVerification(email: string, sessionId: string): 
     await recordEmailResend(email)
   }
 
-  // Mark as auto-resent regardless of success/failure to prevent spam
-  await setSecureSessionCookie(autoResendKey, 'true', 60 * 30)
-
   if (error) {
     console.warn('Auto-resend verification email failed:', error.message)
   }
@@ -51,9 +40,8 @@ export async function autoResendVerification(email: string, sessionId: string): 
 export async function resendEmailVerification(): Promise<ResendState> {
   const supabase = await createClient()
 
-  // Check for new signup session first
-  const signupSessionId = await getSecureSessionCookie('signup-session')
-  const pendingSignup = signupSessionId ? await getPendingSignup(signupSessionId) : null
+  // Check for signup session from cookie
+  const pendingSignup = await getPendingSignup()
   
   if (pendingSignup && !pendingSignup.used) {
     // Check server-side rate limit

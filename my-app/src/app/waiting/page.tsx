@@ -2,14 +2,12 @@ import WaitingClient from './WaitingClient'
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { getPendingSignup } from '@/lib/auth/session'
-import { getSecureSessionCookie } from '@/lib/auth/cookies'
 
 export default async function WaitingPage() {
   const supabase = await createClient()
   
-  // Check for secure signup session
-  const signupSessionId = await getSecureSessionCookie('signup-session')
-  const pendingSignup = signupSessionId ? await getPendingSignup(signupSessionId) : null
+  // Check for signup session from cookie
+  const pendingSignup = await getPendingSignup()
   
   if (!pendingSignup || pendingSignup.used) {
     // No valid signup session, redirect to signup

@@ -50,8 +50,6 @@ export async function updateSession(request: NextRequest) {
   const isVerify = request.nextUrl.pathname.startsWith('/verify')
   const isDashboard = request.nextUrl.pathname.startsWith('/dashboard')
   const isPricing = request.nextUrl.pathname === '/pricing'
-  const isPricingAPI = request.nextUrl.pathname.startsWith('/api/pricing') || 
-                      request.nextUrl.pathname.startsWith('/api/user')
   const isLogin = request.nextUrl.pathname === '/login'
   const isSignup = request.nextUrl.pathname === '/signup'
 
@@ -67,8 +65,8 @@ export async function updateSession(request: NextRequest) {
       return NextResponse.redirect(url)
     }
     if (isVerify) {
-      // Check for secure session cookie instead of legacy cookies
-      const signupSessionId = request.cookies.get('__Secure-signup-session')?.value
+      // Check for secure session cookie
+      const signupSessionId = request.cookies.get('__Host-ssid')?.value
       if (!signupSessionId) {
         const url = request.nextUrl.clone()
         url.pathname = '/signup'
@@ -90,7 +88,7 @@ export async function updateSession(request: NextRequest) {
   // Additional gate: allow /verify only if user just finished signup (session present)
   // If authenticated already, allow verify only during onboarding. Otherwise send to dashboard.
   if (user && isVerify) {
-    const signupSession = request.cookies.get('__Secure-signup-session')?.value
+    const signupSession = request.cookies.get('__Host-ssid')?.value
     if (!signupSession) {
       const url = request.nextUrl.clone()
       url.pathname = '/dashboard'

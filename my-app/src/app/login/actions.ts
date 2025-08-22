@@ -5,7 +5,6 @@ import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { z } from 'zod'
 import { createPendingSignup } from '@/lib/auth/session'
-import { setSecureSessionCookie } from '@/lib/auth/cookies'
 import { env } from '@/lib/env'
 
 export type AuthActionState = {
@@ -135,7 +134,7 @@ export async function signup(_prevState: AuthActionState | null, formData: FormD
   }
 
   // Store signup session info to track auto-resend in /verify
-  const pendingId = await createPendingSignup({
+  await createPendingSignup({
     email: parsed.data.email,
     firstName: parsed.data.firstName,
     lastName: parsed.data.lastName,
@@ -146,8 +145,7 @@ export async function signup(_prevState: AuthActionState | null, formData: FormD
     newsletter: !!parsed.data.newsletter,
   })
 
-  // Store only opaque reference
-  await setSecureSessionCookie('signup-session', pendingId, 60 * 30)
+  // Session cookie is automatically set by createPendingSignup
 
   redirect('/waiting')
 }

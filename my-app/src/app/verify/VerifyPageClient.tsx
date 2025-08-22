@@ -3,12 +3,12 @@
 import { useEffect } from 'react'
 import { autoResendVerification } from './actions'
 
-export function VerifyPageClient({ email, sessionId }: { email: string; sessionId: string }) {
+export function VerifyPageClient({ email }: { email: string }) {
   useEffect(() => {
-    if (email && sessionId) {
-      autoResendVerification(email, sessionId)
+    if (email) {
+      autoResendVerification(email)
     }
-  }, [email, sessionId])
+  }, [email])
 
   return null
 }

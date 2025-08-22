@@ -2,7 +2,6 @@
 
 import { createClient } from '@/lib/supabase/server'
 import { getPendingSignup, canResendEmail, recordEmailResend } from '@/lib/auth/session'
-import { getSecureSessionCookie } from '@/lib/auth/cookies'
 import { env } from '@/lib/env'
 
 export type ResendState = { ok: boolean; error?: string }
@@ -10,9 +9,8 @@ export type ResendState = { ok: boolean; error?: string }
 export async function resendEmailVerification(): Promise<ResendState> {
   const supabase = await createClient()
 
-  // Check for secure signup session
-  const signupSessionId = await getSecureSessionCookie('signup-session')
-  const pendingSignup = signupSessionId ? await getPendingSignup(signupSessionId) : null
+  // Check for signup session from cookie
+  const pendingSignup = await getPendingSignup()
   
   if (!pendingSignup || pendingSignup.used) {
     return { ok: false, error: 'Session expired. Please sign up again.' }

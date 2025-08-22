@@ -1,10 +1,20 @@
 'use client'
 import { useState, useEffect } from 'react'
 import { Upload, Loader2 } from 'lucide-react'
+import Image from 'next/image'
 import { cn } from '@/lib/utils'
+
+interface ExtractedMeasurements {
+  width: number
+  height: number
+  quantity: number
+  unit: string
+  confidence: number
+}
+
 interface PhotoUploadProps {
   isAuthenticated: boolean
-  onMeasurementsExtracted: (measurements: any) => void
+  onMeasurementsExtracted: (measurements: ExtractedMeasurements) => void
 }
 
 export function PhotoUpload({ isAuthenticated, onMeasurementsExtracted }: PhotoUploadProps) {
@@ -72,11 +82,15 @@ export function PhotoUpload({ isAuthenticated, onMeasurementsExtracted }: PhotoU
           )}
         >
           {uploadedImage ? (
-            <img 
-              src={uploadedImage} 
-              alt="Uploaded" 
-              className="h-full w-full object-cover rounded-lg"
-            />
+            <div className="relative h-full w-full rounded-lg overflow-hidden">
+              <Image 
+                src={uploadedImage} 
+                alt="Uploaded measurement photo"
+                fill
+                className="object-cover"
+                sizes="(max-width: 768px) 100vw, 768px"
+              />
+            </div>
           ) : (
             <>
               <Upload className="h-8 w-8 text-gray-400 mb-2" />
