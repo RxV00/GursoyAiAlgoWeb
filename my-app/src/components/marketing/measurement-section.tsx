@@ -101,10 +101,10 @@ data-[state=active]:text-[#2d3e50]">
                         setQuotePayload({
                           product: selectedProduct,
                           measurements: {
-                            width: measurementData.width,
-                            height: measurementData.height,
+                            width: Number(measurementData.width),
+                            height: Number(measurementData.height),
                           },
-                          quantity: measurementData.quantity || 1,
+                          quantity: Number(measurementData.quantity) || 1,
                           calculatedPrice: price,
                         });
                         setError(null);

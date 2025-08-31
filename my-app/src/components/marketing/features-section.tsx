@@ -42,11 +42,12 @@ export function FeaturesSection() {
   ]
 
   return (
-    <section id="features" className="py-24 bg-slate-50">
-      <div className="mx-auto max-w-7xl px-6">
+    <section id="features" className="py-24 bg-gradient-subtle relative overflow-hidden">
+      <div className="absolute inset-0 bg-gradient-radial opacity-50"></div>
+      <div className="mx-auto max-w-7xl px-6 relative z-10">
         <div className="text-center mb-20">
           <h2 className="text-5xl font-light text-slate-900 mb-6">
-            Why Choose <span className="font-semibold text-[#7a8fa5]">Gursoylar</span>?
+            Why Choose <span className="font-semibold text-gradient">Gursoylar</span>?
           </h2>
           <p className="text-xl text-slate-600 max-w-3xl mx-auto leading-relaxed">
             Experience the future of architectural product quoting with our advanced features designed for
@@ -68,11 +69,11 @@ professionals
                 once: true, 
                 margin: "0px 0px -100px 0px"
               }}
-              className="bg-white rounded-2xl shadow-lg border border-slate-200 overflow-hidden"
+              className="glass-card rounded-2xl shadow-lg hover:shadow-glow overflow-hidden group border-0"
             >
               <div className="p-8 text-center">
                 <div className="mb-6">
-                  <div className="inline-flex p-4 rounded-2xl bg-[#f0f4f8] border border-slate-200">
+                  <div className="inline-flex p-4 rounded-2xl glass-card-dark shadow-inner-glow group-hover:animate-pulse-glow transition-all duration-300">
                     <f.icon className="h-8 w-8 text-[#7a8fa5]" />
                   </div>
                 </div>

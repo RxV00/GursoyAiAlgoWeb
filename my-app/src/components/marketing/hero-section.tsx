@@ -42,7 +42,7 @@ export function HeroSection() {
     return (
       <section
         ref={ref}
-        className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-br from-white to-slate-50 pt-24 md:pt-20"
+        className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-br from-white to-slate-50 pt-32 md:pt-28"
       >
         <div className="text-center">
           <div className="animate-pulse text-slate-400">Loading...</div>
@@ -54,9 +54,13 @@ export function HeroSection() {
   return (
     <section
       ref={ref}
-      className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-br from-white to-slate-50 pt-24 md:pt-20"
+      className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-mesh pt-32 md:pt-28"
       style={{
-        backgroundImage: `radial-gradient(circle at 50% 50%, rgba(194, 211, 225, 0.1) 0%, transparent 50%)`,
+        background: `
+          radial-gradient(circle at 25% 25%, rgba(198, 211, 225, 0.15) 0%, transparent 50%),
+          radial-gradient(circle at 75% 75%, rgba(240, 244, 248, 0.2) 0%, transparent 50%),
+          linear-gradient(135deg, #ffffff 0%, #f8fafc 100%)
+        `,
         minHeight: '100vh'
       }}
     >
@@ -111,19 +115,21 @@ export function HeroSection() {
               <Link href="#measurement">
                 <Button
                   size="lg"
-                  className="group bg-[#c6d3e1] hover:bg-[#a8bcd2] text-[#2d3e50] shadow-elegant px-8 py-4 text-lg"
+                  className="group bg-[#c6d3e1] hover:bg-[#a8bcd2] text-[#2d3e50] shadow-elegant hover:shadow-glow px-8 py-4 text-lg transition-all duration-300 hover:scale-105 relative overflow-hidden"
                 >
-                  Start Your Quote
-                  <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
+                  <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700"></span>
+                  <span className="relative z-10">Start Your Quote</span>
+                  <ArrowRight className="relative z-10 ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
                 </Button>
               </Link>
               <Link href="#features">
                 <Button
                   size="lg"
                   variant="outline"
-                  className="border-2 border-[#c6d3e1] text-[#7a8fa5] hover:bg-[#c6d3e1] hover:text-[#2d3e50] px-8 py-4 text-lg"
+                  className="group border-2 border-[#c6d3e1] text-[#7a8fa5] hover:bg-[#c6d3e1] hover:text-[#2d3e50] px-8 py-4 text-lg transition-all duration-300 hover:scale-105 hover:shadow-glow relative overflow-hidden"
                 >
-                  Learn More
+                  <span className="absolute inset-0 bg-gradient-to-r from-[#c6d3e1]/10 via-[#c6d3e1]/30 to-[#c6d3e1]/10 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700"></span>
+                  <span className="relative z-10">Learn More</span>
                 </Button>
               </Link>
             </div>
@@ -132,7 +138,7 @@ export function HeroSection() {
           {/* Elegant stats cards */}
           <div className="mt-12 md:mt-24 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-6 px-2 md:px-0">
             <div
-              className="animate-fade-up bg-white border border-slate-200 rounded-xl p-3 sm:p-4 md:p-6 lg:p-8 shadow-lg hover:shadow-elegant smooth-transition"
+              className="animate-fade-up glass-card rounded-xl p-3 sm:p-4 md:p-6 lg:p-8 shadow-lg hover:shadow-glow smooth-transition group"
               style={{ animationDelay: '0.1s' }}
             >
               <div className="text-lg sm:text-xl md:text-2xl lg:text-3xl xl:text-4xl font-light text-[#7a8fa5]">
@@ -142,7 +148,7 @@ export function HeroSection() {
               <div className="text-xs sm:text-sm text-slate-600 mt-1 md:mt-2">Quotes Generated</div>
             </div>
             <div
-              className="animate-fade-up bg-white border border-slate-200 rounded-xl p-3 sm:p-4 md:p-6 lg:p-8 shadow-lg hover:shadow-elegant smooth-transition"
+              className="animate-fade-up glass-card rounded-xl p-3 sm:p-4 md:p-6 lg:p-8 shadow-lg hover:shadow-glow smooth-transition group"
               style={{ animationDelay: '0.2s' }}
             >
               <div className="text-lg sm:text-xl md:text-2xl lg:text-3xl xl:text-4xl font-light text-[#7a8fa5]">
@@ -152,7 +158,7 @@ export function HeroSection() {
               <div className="text-xs sm:text-sm text-slate-600 mt-1 md:mt-2">Accuracy Rate</div>
             </div>
             <div
-              className="animate-fade-up bg-white border border-slate-200 rounded-xl p-3 sm:p-4 md:p-6 lg:p-8 shadow-lg hover:shadow-elegant smooth-transition"
+              className="animate-fade-up glass-card rounded-xl p-3 sm:p-4 md:p-6 lg:p-8 shadow-lg hover:shadow-glow smooth-transition group"
               style={{ animationDelay: '0.3s' }}
             >
               <div className="text-lg sm:text-xl md:text-2xl lg:text-3xl xl:text-4xl font-light text-[#7a8fa5]">
@@ -161,7 +167,7 @@ export function HeroSection() {
               <div className="text-xs sm:text-sm text-slate-600 mt-1 md:mt-2">Available</div>
             </div>
             <div
-              className="animate-fade-up bg-white border border-slate-200 rounded-xl p-3 sm:p-4 md:p-6 lg:p-8 shadow-lg hover:shadow-elegant smooth-transition"
+              className="animate-fade-up glass-card rounded-xl p-3 sm:p-4 md:p-6 lg:p-8 shadow-lg hover:shadow-glow smooth-transition group"
               style={{ animationDelay: '0.4s' }}
             >
               <div className="text-lg sm:text-xl md:text-2xl lg:text-3xl xl:text-4xl font-light text-[#7a8fa5]">

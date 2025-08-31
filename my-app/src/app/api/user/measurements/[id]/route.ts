@@ -4,7 +4,7 @@ import { DatabaseService } from '@/lib/services/database'
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   // Prevent direct browser access - only allow programmatic requests
   const userAgent = request.headers.get('user-agent') || ''
@@ -29,8 +29,9 @@ export async function GET(
   }
 
   try {
+    const resolvedParams = await params
     const db = new DatabaseService()
-    const measurement = await db.getUserMeasurementById(user.id, params.id)
+    const measurement = await db.getUserMeasurementById(user.id, resolvedParams.id)
 
     if (!measurement) {
       return NextResponse.json(
@@ -54,7 +55,7 @@ export async function GET(
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   // Prevent direct browser access - only allow programmatic requests
   const userAgent = request.headers.get('user-agent') || ''
@@ -79,6 +80,7 @@ export async function PUT(
   }
 
   try {
+    const resolvedParams = await params
     const { measurements, quantity } = await request.json()
 
     if (!measurements || typeof measurements !== 'object') {
@@ -108,7 +110,7 @@ export async function PUT(
     const db = new DatabaseService()
     const updatedMeasurement = await db.updateUserMeasurement(
       user.id,
-      params.id,
+      resolvedParams.id,
       measurements,
       quantity
     )
@@ -128,7 +130,7 @@ export async function PUT(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   // Prevent direct browser access - only allow programmatic requests
   const userAgent = request.headers.get('user-agent') || ''
@@ -153,8 +155,9 @@ export async function DELETE(
   }
 
   try {
+    const resolvedParams = await params
     const db = new DatabaseService()
-    await db.deleteUserMeasurement(user.id, params.id)
+    await db.deleteUserMeasurement(user.id, resolvedParams.id)
 
     return NextResponse.json({
       success: true,

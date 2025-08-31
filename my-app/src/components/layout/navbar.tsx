@@ -16,7 +16,7 @@ export async function AppNavbar() {
 
   const authItems = user 
     ? [
-        { name: "Dashboard", link: "/dashboard" },
+        { name: "Dashboard", link: "/dashboard/quotes" },
       ]
     : [
         { name: "Login", link: "/login" },

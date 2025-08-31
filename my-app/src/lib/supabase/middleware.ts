@@ -79,7 +79,7 @@ export async function updateSession(request: NextRequest) {
   // Redirect authenticated users away from login/signup pages
   if (user && (isLogin || isSignup)) {
     const url = request.nextUrl.clone()
-    url.pathname = '/dashboard'
+    url.pathname = '/dashboard/quotes'
     const response = NextResponse.redirect(url)
     response.headers.set('Cache-Control', 'no-store')
     return response
@@ -91,7 +91,7 @@ export async function updateSession(request: NextRequest) {
     const signupSession = request.cookies.get('__Host-ssid')?.value
     if (!signupSession) {
       const url = request.nextUrl.clone()
-      url.pathname = '/dashboard'
+      url.pathname = '/dashboard/quotes'
       return NextResponse.redirect(url)
     }
   }

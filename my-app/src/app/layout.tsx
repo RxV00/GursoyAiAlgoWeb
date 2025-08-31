@@ -4,6 +4,7 @@ import './globals.css'
 import { AppNavbar } from '@/components/layout/navbar'
 import { Footer } from '@/components/layout/footer'
 import { QueryProvider } from '@/lib/providers/query-provider'
+import { Toaster } from '@/components/ui/sonner'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -25,6 +26,7 @@ export default function RootLayout({
             <AppNavbar />
             {children}
             <Footer />
+            <Toaster position="top-right" />
           </div>
         </QueryProvider>
       </body>

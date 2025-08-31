@@ -3,11 +3,12 @@ import { DatabaseService } from '@/lib/services/database'
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const resolvedParams = await params
     const db = new DatabaseService()
-    const manufacturer = await db.getManufacturerById(params.id)
+    const manufacturer = await db.getManufacturerById(resolvedParams.id)
     
     if (!manufacturer) {
       return NextResponse.json(

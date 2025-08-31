@@ -9,7 +9,7 @@ import {
   useMotionValueEvent,
 } from "motion/react";
 
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, useEffect } from "react";
 
 
 interface NavbarProps {
@@ -51,24 +51,41 @@ interface MobileNavMenuProps {
 
 export const Navbar = ({ children, className }: NavbarProps) => {
   const ref = useRef<HTMLDivElement>(null);
-  const { scrollY } = useScroll({
-    target: ref,
-    offset: ["start start", "end start"],
-  });
+  const { scrollY } = useScroll();
   const [visible, setVisible] = useState<boolean>(false);
 
+  // Use throttled scroll handling to reduce reflow
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+
   useMotionValueEvent(scrollY, "change", (latest) => {
-    const shouldBeVisible = latest > 100;
-    if (visible !== shouldBeVisible) {
-      setVisible(shouldBeVisible);
+    // Clear existing timeout for debouncing
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
     }
+
+    // Debounce the visibility check to prevent excessive updates
+    timeoutRef.current = setTimeout(() => {
+      // Check visibility with hysteresis to prevent flickering
+      const shouldBeVisible = latest > 120;
+      if (visible !== shouldBeVisible) {
+        setVisible(shouldBeVisible);
+      }
+    }, 16); // ~60fps debouncing
   });
 
+  // Cleanup timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+    };
+  }, []);
+
   return (
-    <motion.div
+    <div
       ref={ref}
-      // IMPORTANT: Change this to class of `fixed` if you want the navbar to be fixed
-      className={cn("sticky inset-x-0 top-0 z-40 w-full", className)}
+      className={cn("fixed inset-x-0 top-0 z-40 w-full", className)}
     >
       {React.Children.map(children, (child) =>
         React.isValidElement(child)
@@ -78,7 +95,7 @@ export const Navbar = ({ children, className }: NavbarProps) => {
             )
           : child,
       )}
-    </motion.div>
+    </div>
   );
 };
 
@@ -86,36 +103,26 @@ export const NavBody = ({ children, className, visible }: NavBodyProps) => {
   return (
     <motion.div
       initial={{
-        backdropFilter: "none",
-        boxShadow: "none",
-        width: "100%",
         y: 0,
+        scale: 1,
       }}
       animate={{
-        backdropFilter: visible ? "blur(10px)" : "none",
-        boxShadow: visible
-          ? "0 0 24px rgba(34, 42, 53, 0.06), 0 1px 1px rgba(0, 0, 0, 0.05), 0 0 0 1px rgba(34, 42, 53, 0.04), 0 0 4px rgba(34, 42, 53, 0.08), 0 16px 68px rgba(47, 48, 55, 0.05), 0 1px 0 rgba(255, 255, 255, 0.1) inset"
-          : "none",
-        width: visible ? "min(70%, 1200px)" : "100%",
-        y: visible ? 20 : 0,
+        y: visible ? 16 : 0,
+        scale: visible ? 0.95 : 1,
       }}
       transition={{
-        type: "spring",
-        stiffness: 300,
-        damping: 30,
-        mass: 0.8,
-        bounce: 0.1,
+        type: "tween",
+        duration: 0.3,
+        ease: [0.4, 0, 0.2, 1],
       }}
       style={{
-        minWidth: "min(700px, 90vw)",
-        maxWidth: "100%",
-        minHeight: "56px",
-        contain: "layout style",
-        willChange: visible ? "transform, width" : "auto",
+        willChange: "transform",
       }}
       className={cn(
-        "relative z-[60] mx-auto hidden w-full max-w-7xl flex-row items-center justify-between self-start rounded-full bg-transparent px-6 py-3 lg:flex gap-6",
-        visible && "bg-white/80",
+        "relative z-[60] mx-auto hidden w-full max-w-5xl flex-row items-center justify-between self-start rounded-full px-6 py-3 lg:flex gap-6 transition-all duration-300 ease-out",
+        visible 
+          ? "bg-white/90 backdrop-blur-md shadow-[0_8px_32px_rgba(0,0,0,0.12)] border border-white/20" 
+          : "bg-transparent",
         className,
       )}
     >
@@ -161,43 +168,26 @@ export const MobileNav = ({ children, className, visible }: MobileNavProps) => {
   return (
     <motion.div
       initial={{
-        backdropFilter: "none",
-        boxShadow: "none",
-        width: "100%",
-        paddingLeft: "16px",
-        paddingRight: "16px",
-        paddingTop: "8px",
-        paddingBottom: "8px",
         y: 0,
+        scale: 1,
       }}
-              animate={{
-          backdropFilter: visible ? "blur(10px)" : "none",
-          boxShadow: visible
-            ? "0 0 24px rgba(34, 42, 53, 0.06), 0 1px 1px rgba(0, 0, 0, 0.05), 0 0 0 1px rgba(34, 42, 53, 0.04), 0 0 4px rgba(34, 42, 53, 0.08), 0 16px 68px rgba(47, 48, 55, 0.05), 0 1px 0 rgba(255, 255, 255, 0.1) inset"
-            : "none",
-          width: visible ? "min(92%, calc(100vw - 24px))" : "100%",
-          paddingLeft: visible ? "6px" : "8px",
-          paddingRight: visible ? "6px" : "8px",
-          paddingTop: visible ? "4px" : "6px",
-          paddingBottom: visible ? "4px" : "6px",
-          y: visible ? 20 : 0,
-        }}
+      animate={{
+        y: visible ? 12 : 0,
+        scale: visible ? 0.96 : 1,
+      }}
       transition={{
-        type: "spring",
-        stiffness: 300,
-        damping: 30,
-        mass: 0.8,
-        bounce: 0.1,
+        type: "tween",
+        duration: 0.3,
+        ease: [0.4, 0, 0.2, 1],
       }}
       style={{
-        minHeight: "48px",
-        contain: "layout style",
-        willChange: visible ? "transform, width" : "auto",
-        maxWidth: "calc(100vw - 16px)",
+        willChange: "transform",
       }}
       className={cn(
-        "relative z-50 mx-auto flex w-full max-w-full flex-col items-center justify-between rounded-full bg-transparent px-3 md:px-4 lg:px-3 py-2 lg:py-1.5 lg:hidden",
-        visible && "bg-white/80",
+        "relative z-50 mx-auto flex w-full max-w-full flex-col items-center justify-between rounded-full px-4 py-3 lg:hidden transition-all duration-300 ease-out",
+        visible 
+          ? "bg-white/90 backdrop-blur-md shadow-[0_8px_32px_rgba(0,0,0,0.12)] border border-white/20" 
+          : "bg-transparent",
         className,
       )}
     >

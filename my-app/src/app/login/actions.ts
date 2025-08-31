@@ -61,7 +61,7 @@ export async function login(_prevState: AuthActionState | null, formData: FormDa
   }
 
   revalidatePath('/', 'layout')
-  redirect('/dashboard')
+  redirect('/dashboard/quotes')
 }
 
 export async function signup(_prevState: AuthActionState | null, formData: FormData): Promise<AuthActionState> {
@@ -100,7 +100,7 @@ export async function signup(_prevState: AuthActionState | null, formData: FormD
     email: parsed.data.email,
     password: parsed.data.password,
     options: {
-      emailRedirectTo: `${siteUrl}/auth/confirm?next=/dashboard`,
+      emailRedirectTo: `${siteUrl}/auth/confirm?next=/dashboard/quotes`,
       data: {
         firstName: parsed.data.firstName,
         lastName: parsed.data.lastName,
@@ -123,7 +123,7 @@ export async function signup(_prevState: AuthActionState | null, formData: FormD
       type: 'signup',
       email: parsed.data.email,
       options: {
-        emailRedirectTo: `${siteUrl}/auth/confirm?next=/dashboard`,
+        emailRedirectTo: `${siteUrl}/auth/confirm?next=/dashboard/quotes`,
       },
     })
     

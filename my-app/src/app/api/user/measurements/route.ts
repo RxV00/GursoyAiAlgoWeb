@@ -28,19 +28,67 @@ export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url)
     const productId = searchParams.get('productId') || undefined
-    const dateFrom = searchParams.get('dateFrom') || undefined
-    const dateTo = searchParams.get('dateTo') || undefined
+    const dateFrom = searchParams.get('dateFrom') || searchParams.get('from') || undefined
+    const dateTo = searchParams.get('dateTo') || searchParams.get('to') || undefined
+    const q = searchParams.get('q') || ''
+    // const status = searchParams.get('status') || 'all' // Reserved for future use
+    const sort = searchParams.get('sort') || 'created_at'
+    const order = searchParams.get('order') || 'desc'
+    const offset = parseInt(searchParams.get('offset') || '0')
+    const limit = Math.min(parseInt(searchParams.get('limit') || '20'), 100) // Cap at 100
 
     const db = new DatabaseService()
-    const measurements = await db.getUserMeasurements(user.id, {
+    
+    // Use existing method but we'll need to extend it for advanced filtering
+    let measurements = await db.getUserMeasurements(user.id, {
       productId,
       dateFrom,
       dateTo,
     })
 
+    // Apply search filter
+    if (q.trim()) {
+      const searchTerm = q.toLowerCase()
+      measurements = measurements.filter(m => 
+        m.product.name.toLowerCase().includes(searchTerm) ||
+        m.product.manufacturer.name.toLowerCase().includes(searchTerm) ||
+        m.product.category.name.toLowerCase().includes(searchTerm)
+      )
+    }
+
+    // Apply sorting
+    const validSortFields = ['created_at', 'calculated_price', 'quantity', 'updated_at']
+    const sortField = validSortFields.includes(sort) ? sort as keyof typeof measurements[0] : 'created_at'
+    const isAscending = order === 'asc'
+    
+    measurements.sort((a, b) => {
+      const aVal = a[sortField] as string | number | null
+      const bVal = b[sortField] as string | number | null
+      
+      // Handle null values - put them at the end
+      if (aVal === null && bVal === null) return 0
+      if (aVal === null) return 1
+      if (bVal === null) return -1
+      
+      if (aVal < bVal) return isAscending ? -1 : 1
+      if (aVal > bVal) return isAscending ? 1 : -1
+      return 0
+    })
+
+    // Get total count before pagination
+    const total = measurements.length
+
+    // Apply pagination
+    const paginatedMeasurements = measurements.slice(offset, offset + limit)
+    const hasMore = offset + limit < total
+
     return NextResponse.json({
       success: true,
-      data: measurements
+      data: paginatedMeasurements,
+      total,
+      hasMore,
+      offset,
+      limit
     })
   } catch (error) {
     console.error('API Error - user measurements:', error)

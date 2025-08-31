@@ -5,6 +5,7 @@ export interface DatabaseManufacturer {
   id: string
   name: string
   website?: string
+  description?: string
   created_at: string
 }
 
@@ -127,6 +128,7 @@ export interface ProductFilters {
   manufacturerIds?: string[]
   searchTerm?: string
   hasVideos?: boolean
+  limit?: number
 }
 
 export interface MeasurementFilters {

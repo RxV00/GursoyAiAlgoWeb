@@ -3,16 +3,17 @@ import { DatabaseService } from '@/lib/services/database'
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const resolvedParams = await params
     const { searchParams } = new URL(request.url)
     const includeProducts = searchParams.get('includeProducts') === 'true'
 
     const db = new DatabaseService()
     
     if (includeProducts) {
-      const categoryWithProducts = await db.getCategoryWithProducts(params.id)
+      const categoryWithProducts = await db.getCategoryWithProducts(resolvedParams.id)
       if (!categoryWithProducts) {
         return NextResponse.json(
           { success: false, error: 'Category not found' },
@@ -24,7 +25,7 @@ export async function GET(
         data: categoryWithProducts
       })
     } else {
-      const category = await db.getCategoryById(params.id)
+      const category = await db.getCategoryById(resolvedParams.id)
       if (!category) {
         return NextResponse.json(
           { success: false, error: 'Category not found' },

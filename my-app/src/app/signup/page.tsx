@@ -137,7 +137,6 @@ export default function SignupPage() {
                   </Label>
                   <Input 
                     id="email" 
-                    name="email"
                     {...register('email')}
                     type="email" 
                     placeholder="john@example.com" 
@@ -208,7 +207,6 @@ export default function SignupPage() {
                   <div className="relative">
                     <Input
                       id="password"
-                      name="password"
                       {...register('password')}
                       type={showPassword ? 'text' : 'password'}
                       placeholder="Create a strong password"
@@ -260,7 +258,6 @@ export default function SignupPage() {
                   <div className="relative">
                     <Input
                       id="confirmPassword"
-                      name="confirmPassword"
                       {...register('confirmPassword')}
                       type={showConfirmPassword ? 'text' : 'password'}
                       placeholder="Confirm your password"
